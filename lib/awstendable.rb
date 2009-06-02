@@ -72,6 +72,15 @@ module Awstendable
             first # Good lord.
         ))
       end
+      
+      def to_params
+        {
+          :image_id => self.image_id,
+          :key_name => self.key_name,
+          :instance_type => self.instance_type,
+          :availability_zone => self.placement.availability_zone
+        }
+      end
         
       class << self
         def find(*args)
@@ -191,8 +200,8 @@ module Awstendable
         
         @name       = name
         @roles      = opts[:roles] || {}
-        @instances  = {}
         @sdb_domain = opts[:sdb_domain] || DEFAULT_SDB_DOMAIN
+        @instances  = {}
         yield self if block_given?
       end
     
@@ -203,7 +212,7 @@ module Awstendable
           self.metaclass.send(:define_method, name) { @instances[name] }
         end
       end
-    
+      
       def launch
         @roles.each do |name, params| # TODO Optimize this for a single remote call.
           @instances[name] = AWS::EC2::Instance.launch(params)
@@ -211,23 +220,23 @@ module Awstendable
         store_role_to_instance_id_mapping!
         self
       end
-    
+          
       def reload
         raise "Can't reload unless launched" unless launched?
         @instances.values.each(&:reload) # TODO Optimize this for a single remote call.
         self
       end
-    
+          
       def terminate!
         @instances.values.each(&:terminate!) # TODO Optimize this for a single remote call.
         remove_role_to_instance_id_mapping!
         self
       end
-    
+      
       def launched?
         @instances.any? || restore_from_role_to_instance_id_mapping.any?
       end
-    
+          
       def running?
         launched? && @instances.values.all?(&:running?)
       end
@@ -239,11 +248,11 @@ module Awstendable
       end
       
       private
-      
+            
         def role_names
           @roles.keys
         end
-      
+              
         def store_role_to_instance_id_mapping!
           create_domain_if_necessary
           mapping = returning({}) do |h|
@@ -279,6 +288,29 @@ module Awstendable
     end
   end
   
+  class InstanceList
+    include Enumerable
+    
+    def initialize(name, sdb_domain)
+      @name = name
+      @list = []
+      create_domain_if_necessary(sdb_domain)
+    end
+    
+    def each(&block); @list.each(&block); end
+    
+    def <<(instance)
+      
+    end
+    
+    private
+      def create_domain_if_necessary
+        unless AWS::SimpleDB.connection.list_domains[0].include?(sdb_domain)
+          AWS::SimpleDB.connection.create_domain(sdb_domain)
+        end      
+      end
+  end
+    
   module S3
     module DefaultConnection
       def connection_with_defaults(*args)

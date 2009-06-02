@@ -143,6 +143,27 @@ describe Awstendable::EC2::Instance do
       Awstendable::EC2.stub!(:connection).and_return stub("a connection", :describe_instances => DESCRIBE_INSTANCES_MULTIPLE_RESULTS_RUNNING_XML)
       Awstendable::EC2::Instance.find(:all, :instance_ids => ["an instance id", "another id"]).map(&:instance_id).should == [ "i-25533a4c", "i-738d77ab" ]
     end
+    
+    it "should map camelized XML properties to Ruby-friendly underscored method names" do
+      Awstendable::EC2.stub!(:connection).and_return stub("a connection", :describe_instances => DESCRIBE_INSTANCES_SINGLE_RESULT_RUNNING_XML)
+      instance = Awstendable::EC2::Instance.find("an instance id")
+      instance.image_id.should == "ami-dc789fb5"
+      instance.key_name.should == "gsg-keypair"
+      instance.instance_type.should == "m1.large"
+      instance.placement.availability_zone.should == "us-east-1c"
+    end
+  end
+  
+  describe "to_params" do
+    it "should be able to reproduce a reasonable set of its launch params as a hash" do
+      Awstendable::EC2.stub!(:connection).and_return stub("a connection", :describe_instances => DESCRIBE_INSTANCES_SINGLE_RESULT_RUNNING_XML)
+      Awstendable::EC2::Instance.find("an instance id").to_params.should == {
+        :image_id => "ami-dc789fb5",
+        :key_name => "gsg-keypair",
+        :instance_type => "m1.large",
+        :availability_zone => "us-east-1c"
+      }
+    end
   end
   
   describe "running?" do        
@@ -377,59 +398,29 @@ describe Awstendable::EC2::ApplicationStack do
     end
   end
     
-  # before :each do
-  #   stub_connection = stub!("foo")
-  #   stub_connection.stub!(:put_attributes)
-  #   stub_connection.stub!(:delete_attributes)
-  #   stub_connection.stub!(:get_attributes).and_return({})
-  #   AWS::SimpleDB.stub!(:connection).and_return stub_connection
-  # end
-  # 
-  # def stub_instance(stubs={})
-  #   AWS::EC2::Instance.new(stubs.merge(:instance_id => "i-12345a3c"))
-  # end
-  # 
-  # describe "name" do
-  #   it "should allow you to set a name" do
-  #     AWS::EC2::ApplicationStack.new(:name => "test").name.should == "test"
-  #   end
-  # end
-  # 
-  # describe "role" do
-  #   it "should define a simple role" do
-  #     s = AWS::EC2::ApplicationStack.new {|s| s.role "db1", :instance_type => AWS::EC2::InstanceTypes::M1_LARGE}
-  #     s.roles["db1"][:instance_type].should == AWS::EC2::InstanceTypes::M1_LARGE
-  #   end
-  #   
-  #   it "should define a getter for each role" do
-  #     s = AWS::EC2::ApplicationStack.new {|s| s.role "db1", :instance_type => AWS::EC2::InstanceTypes::M1_LARGE}
-  #     s.db1.should be_nil
-  #   end
-  # end
-  #   
   # describe "launch" do    
   #   it "should launch its roles when launched" do
-  #     s = AWS::EC2::ApplicationStack.new do |s| 
-  #       s.role "db1", :instance_type => AWS::EC2::InstanceTypes::C1_XLARGE
-  #       s.role "app1", :instance_type => AWS::EC2::InstanceTypes::M1_LARGE
+  #     s = ApplicationStack.new("test") do |s| 
+  #       s.role "db1",  :instance_type => Awstendable::EC2::InstanceTypes::C1_XLARGE
+  #       s.role "app1", :instance_type => Awstendable::EC2::InstanceTypes::M1_LARGE
   #     end
   #   
-  #     AWS::EC2::Instance.should_receive(:launch).with({ :instance_type => AWS::EC2::InstanceTypes::C1_XLARGE }).and_return(mock("instance1", :instance_id => "a"))
-  #     AWS::EC2::Instance.should_receive(:launch).with({ :instance_type => AWS::EC2::InstanceTypes::M1_LARGE }).and_return(mock("instance2", :instance_id => "b"))
+  #     Awstendable::EC2::Instance.should_receive(:launch).with({ :instance_type => Awstendable::EC2::InstanceTypes::C1_XLARGE }).and_return(mock("instance1", :instance_id => "a"))
+  #     Awstendable::EC2::Instance.should_receive(:launch).with({ :instance_type => Awstendable::EC2::InstanceTypes::M1_LARGE }).and_return(mock("instance2", :instance_id => "b"))
   #   
   #     s.launch
   #   end
   #   
   #   it "should set the getter for the particular instance to the return value of launching the instance" do      
   #     s = AWS::EC2::ApplicationStack.new do |s| 
-  #       s.role "db1", :instance_type => AWS::EC2::InstanceTypes::C1_XLARGE
-  #       s.role "app1", :instance_type => AWS::EC2::InstanceTypes::M1_LARGE
+  #       s.role "db1",  :instance_type => Awstendable::EC2::InstanceTypes::C1_XLARGE
+  #       s.role "app1", :instance_type => Awstendable::EC2::InstanceTypes::M1_LARGE
   #     end
   #     
   #     instances = [ stub_instance, stub_instance ]
   #     
-  #     AWS::EC2::Instance.stub!(:launch).with({ :instance_type => AWS::EC2::InstanceTypes::C1_XLARGE }).and_return instances.first
-  #     AWS::EC2::Instance.stub!(:launch).with({ :instance_type => AWS::EC2::InstanceTypes::M1_LARGE }).and_return instances.last
+  #     Awstendable::EC2::Instance.stub!(:launch).with({ :instance_type => Awstendable::EC2::InstanceTypes::C1_XLARGE }).and_return instances.first
+  #     Awstendable::EC2::Instance.stub!(:launch).with({ :instance_type => Awstendable::EC2::InstanceTypes::M1_LARGE }).and_return instances.last
   #     
   #     s.db1.should be_nil
   #     s.app1.should be_nil
