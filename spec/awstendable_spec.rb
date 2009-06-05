@@ -514,57 +514,54 @@ describe Awstendable::EC2::ApplicationStack do
       s.db1.should == an_instance
     end
   end
-  # 
-  # describe "running?" do
-  #   it "should be false initially" do
-  #     s = AWS::EC2::ApplicationStack.new {|s| s.role "db1", :instance_type => AWS::EC2::InstanceTypes::M1_LARGE}
-  #     s.should_not be_running
-  #   end
-  #   
-  #   it "should be false if launched but all instances are pended" do
-  #     s = AWS::EC2::ApplicationStack.new {|s| s.role "db1", :instance_type => AWS::EC2::InstanceTypes::M1_LARGE}
-  #     AWS::EC2::Instance.stub!(:launch).and_return stub_instance(:instance_state => { :name => "pending" })
-  #     s.launch
-  #     s.should_not be_running
-  #   end
-  #   
-  #   it "should be false if launched and some instances are pended" do
-  #     s = AWS::EC2::ApplicationStack.new do |s| 
-  #       s.role "db1", :instance_type => AWS::EC2::InstanceTypes::C1_XLARGE
-  #       s.role "app1", :instance_type => AWS::EC2::InstanceTypes::M1_LARGE
-  #     end
-  #     
-  #     AWS::EC2::Instance.stub!(:launch).
-  #       with({ :instance_type => AWS::EC2::InstanceTypes::C1_XLARGE }).
-  #       and_return stub_instance(:instance_state => { :name => "pending" })
-  #       
-  #     AWS::EC2::Instance.stub!(:launch).
-  #       with({ :instance_type => AWS::EC2::InstanceTypes::M1_LARGE }).
-  #       and_return stub_instance(:instance_state => { :name => "running" })
-  #       
-  #     s.launch
-  #     s.should_not be_running
-  #   end
-  #   
-  #   it "should be true if launched and all instances are running" do
-  #     s = AWS::EC2::ApplicationStack.new do |s| 
-  #       s.role "db1", :instance_type => AWS::EC2::InstanceTypes::C1_XLARGE
-  #       s.role "app1", :instance_type => AWS::EC2::InstanceTypes::M1_LARGE
-  #     end
-  #     
-  #     AWS::EC2::Instance.stub!(:launch).
-  #       with({ :instance_type => AWS::EC2::InstanceTypes::C1_XLARGE }).
-  #       and_return stub_instance(:instance_state => { :name => "running" })
-  #       
-  #     AWS::EC2::Instance.stub!(:launch).
-  #       with({ :instance_type => AWS::EC2::InstanceTypes::M1_LARGE }).
-  #       and_return stub_instance(:instance_state => { :name => "running" })
-  #       
-  #     s.launch
-  #     s.should be_running
-  #   end
-  # end
-  # 
+  
+  describe "running?" do
+    it "should be false initially" do
+      ApplicationStack.new("test") {|s| s.role "db1"}.should_not be_running
+    end
+    
+    it "should be false if launched but all instances are pended" do
+      Instance.stub!(:launch).and_return stub_instance(:instance_state => { :name => "pending" })
+      ApplicationStack.new("test") {|s| s.role "db1"}.launch.should_not be_running
+    end
+    
+    it "should be false if launched and some instances are pended" do
+      s = ApplicationStack.new("test") do |s| 
+        s.role "db1", :instance_type => Awstendable::EC2::InstanceTypes::C1_XLARGE
+        s.role "app1", :instance_type => Awstendable::EC2::InstanceTypes::M1_LARGE
+      end
+      
+      Instance.stub!(:launch).
+        with({ :instance_type => Awstendable::EC2::InstanceTypes::C1_XLARGE }).
+        and_return stub_instance(:instance_state => { :name => "pending" })
+        
+      Instance.stub!(:launch).
+        with({ :instance_type => Awstendable::EC2::InstanceTypes::M1_LARGE }).
+        and_return stub_instance(:instance_state => { :name => "running" })
+        
+      s.launch
+      s.should_not be_running
+    end
+    
+    it "should be true if launched and all instances are running" do
+      s = ApplicationStack.new("test") do |s| 
+        s.role "db1", :instance_type => Awstendable::EC2::InstanceTypes::C1_XLARGE
+        s.role "app1", :instance_type => Awstendable::EC2::InstanceTypes::M1_LARGE
+      end
+      
+      Instance.stub!(:launch).
+        with({ :instance_type => Awstendable::EC2::InstanceTypes::C1_XLARGE }).
+        and_return stub_instance(:instance_state => { :name => "running" })
+        
+      Instance.stub!(:launch).
+        with({ :instance_type => Awstendable::EC2::InstanceTypes::M1_LARGE }).
+        and_return stub_instance(:instance_state => { :name => "running" })
+        
+      s.launch
+      s.should be_running
+    end
+  end
+  
   describe "terminate!" do
     it "should not do anything if not running" do
       s = ApplicationStack.new("test") { |s| s.role "db1" }
@@ -584,7 +581,7 @@ describe Awstendable::EC2::ApplicationStack do
     it "should remove any stored role name mappings" do
       Awstendable::SimpleDB.put ApplicationStack::DEFAULT_SDB_DOMAIN, "test", "db1" => ["instance_id"]
       s = ApplicationStack.new("test") { |s| s.role "db1" }
-      Instance.stub!(:launch).and_return stub_everything
+      Instance.stub!(:launch).and_return stub('stub').as_null_object
       s.launch
       s.terminate!
       Awstendable::SimpleDB.get(ApplicationStack::DEFAULT_SDB_DOMAIN, "test").should be_blank

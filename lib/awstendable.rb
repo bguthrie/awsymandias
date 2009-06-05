@@ -1,5 +1,4 @@
 require 'EC2'
-require 'aws/s3'
 require 'aws_sdb'
 require 'activesupport'
 require 'activeresource'
@@ -27,10 +26,6 @@ module Awstendable
           :secret_access_key => Awstendable.secret_access_key || ENV['AMAZON_SECRET_ACCESS_KEY']
         )
       end
-      
-      def reset_connection
-        @connection = nil
-      end      
     end
     
     # All currently available instance times.
@@ -265,10 +260,6 @@ module Awstendable
       
       private
             
-        def role_names
-          @roles.keys
-        end
-              
         def store_role_to_instance_id_mapping!
           Awstendable::SimpleDB.put @sdb_domain, @name, ( returning({}) do |h|
             @instances.each {|role_name, instance| h[role_name] = instance.instance_id}
@@ -290,32 +281,9 @@ module Awstendable
           end
         end
         
-        def create_domain_if_necessary
-          unless Awstendable::SimpleDB.connection.list_domains[0].include?(@sdb_domain)
-            Awstendable::SimpleDB.connection.create_domain(@sdb_domain)
-          end
-        end
     end
   end
       
-  module S3
-    module DefaultConnection
-      def connection_with_defaults(*args)
-        retried = false
-        connection_without_defaults(*args)
-      rescue AWS::S3::NoConnectionEstablished
-        establish_connection!(
-          :access_key_id     => ENV['AMAZON_ACCESS_KEY_ID'],
-          :secret_access_key => ENV['AMAZON_SECRET_ACCESS_KEY']
-        )
-        retried ? raise : ( retried = true; retry )
-      end
-    end
-    
-    AWS::S3::Base.send :extend, DefaultConnection
-    AWS::S3::Base.metaclass.send :alias_method_chain, :connection, :defaults
-  end
-
   # TODO Locate a nicer SimpleDB API and get out of the business of maintaining this one.
   module SimpleDB # :nodoc
     class << self
@@ -324,10 +292,6 @@ module Awstendable
           :access_key_id     => Awstendable.access_key_id     || ENV['AMAZON_ACCESS_KEY_ID'],
           :secret_access_key => Awstendable.secret_access_key || ENV['AMAZON_SECRET_ACCESS_KEY']
         }.merge(opts))
-      end
-      
-      def reset_connection
-        @connection = nil
       end
       
       def put(domain, name, stuff)
