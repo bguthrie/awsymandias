@@ -3,6 +3,38 @@ require 'spec'
 require File.dirname(__FILE__) + "/../lib/awstendable"
 
 describe Awstendable::EC2::Instance do
+  describe "connection" do
+    after :each do
+      Awstendable::EC2.access_key_id     = nil
+      Awstendable::EC2.secret_access_key = nil
+      ENV['AMAZON_ACCESS_KEY_ID']        = nil
+      ENV['AMAZON_SECRET_ACCESS_KEY']    = nil
+      Awstendable::EC2.reset_connection
+    end
+    
+    it "configure EC2::Base with its own configured access keys" do
+      Awstendable::EC2.access_key_id = "configured key"
+      Awstendable::EC2.secret_access_key = "configured secret"
+      
+      ::EC2::Base.should_receive(:new).
+        with(hash_including(:access_key_id => "configured key", :secret_access_key => "configured secret")).
+        and_return(:a_connection)
+      
+      Awstendable::EC2.connection.should == :a_connection
+    end
+    
+    it "should default to the environment access keys if not expclitly configured" do
+      ENV['AMAZON_ACCESS_KEY_ID'] = "environment key"
+      ENV['AMAZON_SECRET_ACCESS_KEY'] = "environment secret"
+      
+      ::EC2::Base.should_receive(:new).
+        with(hash_including(:access_key_id => "environment key", :secret_access_key => "environment secret")).
+        and_return(:a_connection)
+      
+      Awstendable::EC2.connection.should == :a_connection
+    end
+  end
+  
   DESCRIBE_INSTANCES_NO_RESULTS_XML = {
     "requestId" => "7bca5c7c-1b51-473e-a930-611e55920e39",
     "xmlns"=>"http://ec2.amazonaws.com/doc/2008-12-01/",
