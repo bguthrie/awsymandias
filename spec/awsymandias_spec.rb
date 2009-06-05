@@ -2,17 +2,17 @@ require 'rubygems'
 require 'spec'
 require File.dirname(__FILE__) + "/../lib/awstendable"
 
-describe Awstendable::EC2::Instance do  
+describe Awsymandias::EC2::Instance do  
   describe "connection" do
     it "should configure an instance of EC2::Base" do
-      Awstendable.access_key_id = "configured key"
-      Awstendable.secret_access_key = "configured secret"
+      Awsymandias.access_key_id = "configured key"
+      Awsymandias.secret_access_key = "configured secret"
       
       ::EC2::Base.should_receive(:new).
         with(hash_including(:access_key_id => "configured key", :secret_access_key => "configured secret")).
         and_return(:a_connection)
       
-      Awstendable::EC2.connection.should == :a_connection
+      Awsymandias::EC2.connection.should == :a_connection
     end    
   end
   
@@ -141,25 +141,25 @@ describe Awstendable::EC2::Instance do
   
   describe "find" do
     it "should raise ActiveResource::ResourceNotFound if the given instance ID is not found" do
-      Awstendable::EC2.stub!(:connection).and_return stub("a connection", :describe_instances => DESCRIBE_INSTANCES_NO_RESULTS_XML)
+      Awsymandias::EC2.stub!(:connection).and_return stub("a connection", :describe_instances => DESCRIBE_INSTANCES_NO_RESULTS_XML)
       lambda do
-        Awstendable::EC2::Instance.find("an instance id")
+        Awsymandias::EC2::Instance.find("an instance id")
       end.should raise_error(ActiveResource::ResourceNotFound)
     end
     
     it "should return an object with the appropriate instance ID when an instance with the given ID is found" do
-      Awstendable::EC2.stub!(:connection).and_return stub("a connection", :describe_instances => DESCRIBE_INSTANCES_SINGLE_RESULT_RUNNING_XML)
-      Awstendable::EC2::Instance.find("an instance id").instance_id.should == "i-25533a4c"
+      Awsymandias::EC2.stub!(:connection).and_return stub("a connection", :describe_instances => DESCRIBE_INSTANCES_SINGLE_RESULT_RUNNING_XML)
+      Awsymandias::EC2::Instance.find("an instance id").instance_id.should == "i-25533a4c"
     end
     
     it "should return more than one object if multiple IDs are requested" do
-      Awstendable::EC2.stub!(:connection).and_return stub("a connection", :describe_instances => DESCRIBE_INSTANCES_MULTIPLE_RESULTS_RUNNING_XML)
-      Awstendable::EC2::Instance.find(:all, :instance_ids => ["an instance id", "another id"]).map(&:instance_id).should == [ "i-25533a4c", "i-738d77ab" ]
+      Awsymandias::EC2.stub!(:connection).and_return stub("a connection", :describe_instances => DESCRIBE_INSTANCES_MULTIPLE_RESULTS_RUNNING_XML)
+      Awsymandias::EC2::Instance.find(:all, :instance_ids => ["an instance id", "another id"]).map(&:instance_id).should == [ "i-25533a4c", "i-738d77ab" ]
     end
     
     it "should map camelized XML properties to Ruby-friendly underscored method names" do
-      Awstendable::EC2.stub!(:connection).and_return stub("a connection", :describe_instances => DESCRIBE_INSTANCES_SINGLE_RESULT_RUNNING_XML)
-      instance = Awstendable::EC2::Instance.find("an instance id")
+      Awsymandias::EC2.stub!(:connection).and_return stub("a connection", :describe_instances => DESCRIBE_INSTANCES_SINGLE_RESULT_RUNNING_XML)
+      instance = Awsymandias::EC2::Instance.find("an instance id")
       instance.image_id.should == "ami-dc789fb5"
       instance.key_name.should == "gsg-keypair"
       instance.instance_type.should == "m1.large"
@@ -169,8 +169,8 @@ describe Awstendable::EC2::Instance do
   
   describe "to_params" do
     it "should be able to reproduce a reasonable set of its launch params as a hash" do
-      Awstendable::EC2.stub!(:connection).and_return stub("a connection", :describe_instances => DESCRIBE_INSTANCES_SINGLE_RESULT_RUNNING_XML)
-      Awstendable::EC2::Instance.find("an instance id").to_params.should == {
+      Awsymandias::EC2.stub!(:connection).and_return stub("a connection", :describe_instances => DESCRIBE_INSTANCES_SINGLE_RESULT_RUNNING_XML)
+      Awsymandias::EC2::Instance.find("an instance id").to_params.should == {
         :image_id => "ami-dc789fb5",
         :key_name => "gsg-keypair",
         :instance_type => "m1.large",
@@ -181,23 +181,23 @@ describe Awstendable::EC2::Instance do
   
   describe "running?" do        
     it "should return false if it contains an instances set with the given instance ID and its state is pending" do
-      Awstendable::EC2.stub!(:connection).and_return stub("a connection", :describe_instances => DESCRIBE_INSTANCES_SINGLE_RESULT_PENDING_XML)
-      Awstendable::EC2::Instance.find("an instance id").should_not be_running
+      Awsymandias::EC2.stub!(:connection).and_return stub("a connection", :describe_instances => DESCRIBE_INSTANCES_SINGLE_RESULT_PENDING_XML)
+      Awsymandias::EC2::Instance.find("an instance id").should_not be_running
     end
     
     it "should return true if it contains an instances set with the given instance ID and its state is running" do
-      Awstendable::EC2.stub!(:connection).and_return stub("a connection", :describe_instances => DESCRIBE_INSTANCES_SINGLE_RESULT_RUNNING_XML)
-      Awstendable::EC2::Instance.find("an instance id").should be_running
+      Awsymandias::EC2.stub!(:connection).and_return stub("a connection", :describe_instances => DESCRIBE_INSTANCES_SINGLE_RESULT_RUNNING_XML)
+      Awsymandias::EC2::Instance.find("an instance id").should be_running
     end
   end
   
   describe "reload" do
     it "should reload an instance without replacing the object" do
-      Awstendable::EC2.stub!(:connection).and_return stub("a connection", :describe_instances => DESCRIBE_INSTANCES_SINGLE_RESULT_PENDING_XML)
-      instance = Awstendable::EC2::Instance.find("an instance id")
+      Awsymandias::EC2.stub!(:connection).and_return stub("a connection", :describe_instances => DESCRIBE_INSTANCES_SINGLE_RESULT_PENDING_XML)
+      instance = Awsymandias::EC2::Instance.find("an instance id")
       instance.should_not be_running
       
-      Awstendable::EC2.stub!(:connection).and_return stub("a connection", :describe_instances => DESCRIBE_INSTANCES_SINGLE_RESULT_RUNNING_XML)
+      Awsymandias::EC2.stub!(:connection).and_return stub("a connection", :describe_instances => DESCRIBE_INSTANCES_SINGLE_RESULT_RUNNING_XML)
       instance.reload.should be_running
     end    
   end
@@ -239,19 +239,19 @@ describe Awstendable::EC2::Instance do
       mock_connection.should_receive(:run_instances).with(hash_including(
         :image_id => "an_id",
         :key_name => "gsg-keypair",
-        :instance_type => Awstendable::EC2::InstanceTypes::M1_SMALL,
-        :availability_zone => Awstendable::EC2::AvailabilityZones::US_EAST_1A
+        :instance_type => Awsymandias::EC2::InstanceTypes::M1_SMALL,
+        :availability_zone => Awsymandias::EC2::AvailabilityZones::US_EAST_1A
       )).and_return(RUN_INSTANCES_SINGLE_RESULT_XML)
       
       mock_connection.should_receive(:describe_instances).and_return(DESCRIBE_INSTANCES_SINGLE_RESULT_PENDING_XML)
       
-      Awstendable::EC2.stub!(:connection).and_return mock_connection
+      Awsymandias::EC2.stub!(:connection).and_return mock_connection
       
-      Awstendable::EC2::Instance.launch(
+      Awsymandias::EC2::Instance.launch(
         :image_id => "an_id",
         :key_name => "gsg-keypair",
-        :instance_type => Awstendable::EC2::InstanceTypes::M1_SMALL,
-        :availability_zone => Awstendable::EC2::AvailabilityZones::US_EAST_1A        
+        :instance_type => Awsymandias::EC2::InstanceTypes::M1_SMALL,
+        :availability_zone => Awsymandias::EC2::AvailabilityZones::US_EAST_1A        
       ).instance_id.should == "i-25533a4c"
     end
     
@@ -262,8 +262,8 @@ describe Awstendable::EC2::Instance do
       )).and_return(RUN_INSTANCES_SINGLE_RESULT_XML)
       mock_connection.should_receive(:describe_instances).and_return(stub("response").as_null_object)
       
-      Awstendable::EC2.stub!(:connection).and_return mock_connection
-      Awstendable::EC2::Instance.launch(:user_data => { :foo => "bar" })
+      Awsymandias::EC2.stub!(:connection).and_return mock_connection
+      Awsymandias::EC2::Instance.launch(:user_data => { :foo => "bar" })
     end
   end
   
@@ -332,9 +332,9 @@ describe Awstendable::EC2::Instance do
         TERMINATE_INSTANCES_SINGLE_RESULT_XML
       )
       
-      Awstendable::EC2.stub!(:connection).and_return mock_connection
+      Awsymandias::EC2.stub!(:connection).and_return mock_connection
       
-      instance = Awstendable::EC2::Instance.find("a result id")
+      instance = Awsymandias::EC2::Instance.find("a result id")
       instance.should be_running
       instance.terminate!
       instance.should_not be_running
@@ -343,9 +343,9 @@ describe Awstendable::EC2::Instance do
   end
 end
 
-describe Awstendable::EC2::ApplicationStack do
-  ApplicationStack = Awstendable::EC2::ApplicationStack
-  Instance         = Awstendable::EC2::Instance
+describe Awsymandias::EC2::ApplicationStack do
+  ApplicationStack = Awsymandias::EC2::ApplicationStack
+  Instance         = Awsymandias::EC2::Instance
   
   class SimpleDBStub
     def initialize
@@ -381,7 +381,7 @@ describe Awstendable::EC2::ApplicationStack do
   
   before :each do
     @simpledb = SimpleDBStub.new
-    Awstendable::SimpleDB.stub!(:connection).and_return @simpledb
+    Awsymandias::SimpleDB.stub!(:connection).and_return @simpledb
   end
     
   it "should have a name" do
@@ -452,26 +452,26 @@ describe Awstendable::EC2::ApplicationStack do
   describe "launch" do
     it "should launch its roles when launched" do
       s = ApplicationStack.new("test") do |s| 
-        s.role "db1",  :instance_type => Awstendable::EC2::InstanceTypes::C1_XLARGE
-        s.role "app1", :instance_type => Awstendable::EC2::InstanceTypes::M1_LARGE
+        s.role "db1",  :instance_type => Awsymandias::EC2::InstanceTypes::C1_XLARGE
+        s.role "app1", :instance_type => Awsymandias::EC2::InstanceTypes::M1_LARGE
       end
     
-      Instance.should_receive(:launch).with({ :instance_type => Awstendable::EC2::InstanceTypes::C1_XLARGE }).and_return(mock("instance1", :instance_id => "a"))
-      Instance.should_receive(:launch).with({ :instance_type => Awstendable::EC2::InstanceTypes::M1_LARGE }).and_return(mock("instance2", :instance_id => "b"))
+      Instance.should_receive(:launch).with({ :instance_type => Awsymandias::EC2::InstanceTypes::C1_XLARGE }).and_return(mock("instance1", :instance_id => "a"))
+      Instance.should_receive(:launch).with({ :instance_type => Awsymandias::EC2::InstanceTypes::M1_LARGE }).and_return(mock("instance2", :instance_id => "b"))
     
       s.launch
     end
     
     it "should set the getter for the particular instance to the return value of launching the instance" do      
       s = ApplicationStack.new("test") do |s| 
-        s.role "db1",  :instance_type => Awstendable::EC2::InstanceTypes::C1_XLARGE
-        s.role "app1", :instance_type => Awstendable::EC2::InstanceTypes::M1_LARGE
+        s.role "db1",  :instance_type => Awsymandias::EC2::InstanceTypes::C1_XLARGE
+        s.role "app1", :instance_type => Awsymandias::EC2::InstanceTypes::M1_LARGE
       end
       
       instances = [ stub_instance, stub_instance ]
       
-      Instance.stub!(:launch).with({ :instance_type => Awstendable::EC2::InstanceTypes::C1_XLARGE }).and_return instances.first
-      Instance.stub!(:launch).with({ :instance_type => Awstendable::EC2::InstanceTypes::M1_LARGE }).and_return instances.last
+      Instance.stub!(:launch).with({ :instance_type => Awsymandias::EC2::InstanceTypes::C1_XLARGE }).and_return instances.first
+      Instance.stub!(:launch).with({ :instance_type => Awsymandias::EC2::InstanceTypes::M1_LARGE }).and_return instances.last
       
       s.db1.should be_nil
       s.app1.should be_nil
@@ -483,9 +483,9 @@ describe Awstendable::EC2::ApplicationStack do
     end
     
     it "should store details about the newly launched instances" do
-      Awstendable::EC2::Instance.stub!(:launch).and_return stub_instance(:instance_id => "abc123")
-      Awstendable::EC2::ApplicationStack.new("test") do |s| 
-        s.role "db1", :instance_type => Awstendable::EC2::InstanceTypes::C1_XLARGE
+      Awsymandias::EC2::Instance.stub!(:launch).and_return stub_instance(:instance_id => "abc123")
+      Awsymandias::EC2::ApplicationStack.new("test") do |s| 
+        s.role "db1", :instance_type => Awsymandias::EC2::InstanceTypes::C1_XLARGE
       end.launch
       
       simpledb.get_attributes(ApplicationStack::DEFAULT_SDB_DOMAIN, "test").should == { "db1" => "abc123" }
@@ -494,19 +494,19 @@ describe Awstendable::EC2::ApplicationStack do
   
   describe "launched?" do    
     it "should be false initially" do
-      s = ApplicationStack.new("test") {|s| s.role "db1", :instance_type => Awstendable::EC2::InstanceTypes::M1_LARGE}
+      s = ApplicationStack.new("test") {|s| s.role "db1", :instance_type => Awsymandias::EC2::InstanceTypes::M1_LARGE}
       s.should_not be_launched
     end
     
     it "should be true if launched and instances are non-empty" do
       s = ApplicationStack.new("test") { |s| s.role "db1" }
-      Awstendable::EC2::Instance.stub!(:launch).and_return stub_instance
+      Awsymandias::EC2::Instance.stub!(:launch).and_return stub_instance
       s.launch
       s.should be_launched
     end
     
     it "should attempt to determine whether or not it's been previously launched" do
-      Awstendable::SimpleDB.put ApplicationStack::DEFAULT_SDB_DOMAIN, "test", "db1" => ["instance_id"]
+      Awsymandias::SimpleDB.put ApplicationStack::DEFAULT_SDB_DOMAIN, "test", "db1" => ["instance_id"]
       an_instance = stub_instance :instance_id => "instance_id"
       Instance.should_receive(:find).with(:all, :instance_ids => [ "instance_id" ]).and_return [ an_instance ]
       s = ApplicationStack.new("test") { |s| s.role "db1" }
@@ -527,16 +527,16 @@ describe Awstendable::EC2::ApplicationStack do
     
     it "should be false if launched and some instances are pended" do
       s = ApplicationStack.new("test") do |s| 
-        s.role "db1", :instance_type => Awstendable::EC2::InstanceTypes::C1_XLARGE
-        s.role "app1", :instance_type => Awstendable::EC2::InstanceTypes::M1_LARGE
+        s.role "db1", :instance_type => Awsymandias::EC2::InstanceTypes::C1_XLARGE
+        s.role "app1", :instance_type => Awsymandias::EC2::InstanceTypes::M1_LARGE
       end
       
       Instance.stub!(:launch).
-        with({ :instance_type => Awstendable::EC2::InstanceTypes::C1_XLARGE }).
+        with({ :instance_type => Awsymandias::EC2::InstanceTypes::C1_XLARGE }).
         and_return stub_instance(:instance_state => { :name => "pending" })
         
       Instance.stub!(:launch).
-        with({ :instance_type => Awstendable::EC2::InstanceTypes::M1_LARGE }).
+        with({ :instance_type => Awsymandias::EC2::InstanceTypes::M1_LARGE }).
         and_return stub_instance(:instance_state => { :name => "running" })
         
       s.launch
@@ -545,16 +545,16 @@ describe Awstendable::EC2::ApplicationStack do
     
     it "should be true if launched and all instances are running" do
       s = ApplicationStack.new("test") do |s| 
-        s.role "db1", :instance_type => Awstendable::EC2::InstanceTypes::C1_XLARGE
-        s.role "app1", :instance_type => Awstendable::EC2::InstanceTypes::M1_LARGE
+        s.role "db1", :instance_type => Awsymandias::EC2::InstanceTypes::C1_XLARGE
+        s.role "app1", :instance_type => Awsymandias::EC2::InstanceTypes::M1_LARGE
       end
       
       Instance.stub!(:launch).
-        with({ :instance_type => Awstendable::EC2::InstanceTypes::C1_XLARGE }).
+        with({ :instance_type => Awsymandias::EC2::InstanceTypes::C1_XLARGE }).
         and_return stub_instance(:instance_state => { :name => "running" })
         
       Instance.stub!(:launch).
-        with({ :instance_type => Awstendable::EC2::InstanceTypes::M1_LARGE }).
+        with({ :instance_type => Awsymandias::EC2::InstanceTypes::M1_LARGE }).
         and_return stub_instance(:instance_state => { :name => "running" })
         
       s.launch
@@ -565,7 +565,7 @@ describe Awstendable::EC2::ApplicationStack do
   describe "terminate!" do
     it "should not do anything if not running" do
       s = ApplicationStack.new("test") { |s| s.role "db1" }
-      Awstendable::EC2.should_receive(:connection).never
+      Awsymandias::EC2.should_receive(:connection).never
       s.terminate!
     end
     
@@ -579,27 +579,27 @@ describe Awstendable::EC2::ApplicationStack do
     end
     
     it "should remove any stored role name mappings" do
-      Awstendable::SimpleDB.put ApplicationStack::DEFAULT_SDB_DOMAIN, "test", "db1" => ["instance_id"]
+      Awsymandias::SimpleDB.put ApplicationStack::DEFAULT_SDB_DOMAIN, "test", "db1" => ["instance_id"]
       s = ApplicationStack.new("test") { |s| s.role "db1" }
       Instance.stub!(:launch).and_return stub('stub').as_null_object
       s.launch
       s.terminate!
-      Awstendable::SimpleDB.get(ApplicationStack::DEFAULT_SDB_DOMAIN, "test").should be_blank
+      Awsymandias::SimpleDB.get(ApplicationStack::DEFAULT_SDB_DOMAIN, "test").should be_blank
     end
   end
 end
 
-describe Awstendable::SimpleDB do
+describe Awsymandias::SimpleDB do
   describe "connection" do
     it "configure an instance of AwsSdb::Service" do
-      Awstendable.access_key_id = "configured key"
-      Awstendable.secret_access_key = "configured secret"
+      Awsymandias.access_key_id = "configured key"
+      Awsymandias.secret_access_key = "configured secret"
       
       ::AwsSdb::Service.should_receive(:new).
         with(hash_including(:access_key_id => "configured key", :secret_access_key => "configured secret")).
         and_return(:a_connection)
       
-      Awstendable::SimpleDB.connection.should == :a_connection
+      Awsymandias::SimpleDB.connection.should == :a_connection
     end
   end
 end

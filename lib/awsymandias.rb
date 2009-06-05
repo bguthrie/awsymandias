@@ -3,7 +3,7 @@ require 'aws_sdb'
 require 'activesupport'
 require 'activeresource'
 
-module Awstendable
+module Awsymandias
   class << self
     attr_writer :access_key_id, :secret_access_key
     
@@ -22,8 +22,8 @@ module Awstendable
       # connection creation.
       def connection
         @connection ||= ::EC2::Base.new(
-          :access_key_id     => Awstendable.access_key_id     || ENV['AMAZON_ACCESS_KEY_ID'],
-          :secret_access_key => Awstendable.secret_access_key || ENV['AMAZON_SECRET_ACCESS_KEY']
+          :access_key_id     => Awsymandias.access_key_id     || ENV['AMAZON_ACCESS_KEY_ID'],
+          :secret_access_key => Awsymandias.secret_access_key || ENV['AMAZON_SECRET_ACCESS_KEY']
         )
       end
     end
@@ -72,7 +72,7 @@ module Awstendable
       end
     
       def terminate!
-        Awstendable::EC2.connection.terminate_instances :instance_id => self.instance_id
+        Awsymandias::EC2.connection.terminate_instances :instance_id => self.instance_id
         reload
       end
     
@@ -132,7 +132,7 @@ module Awstendable
         
           opts[:user_data] &&= opts[:user_data].to_json
         
-          response = Awstendable::EC2.connection.run_instances opts
+          response = Awsymandias::EC2.connection.run_instances opts
           instance_id = response["instancesSet"]["item"].map {|h| h["instanceId"]}.first
           find(instance_id)
         end
@@ -226,7 +226,7 @@ module Awstendable
       
       def launch
         @roles.each do |name, params| # TODO Optimize this for a single remote call.
-          @instances[name] = Awstendable::EC2::Instance.launch(params)
+          @instances[name] = Awsymandias::EC2::Instance.launch(params)
         end
         store_role_to_instance_id_mapping!
         self
@@ -261,19 +261,19 @@ module Awstendable
       private
             
         def store_role_to_instance_id_mapping!
-          Awstendable::SimpleDB.put @sdb_domain, @name, ( returning({}) do |h|
+          Awsymandias::SimpleDB.put @sdb_domain, @name, ( returning({}) do |h|
             @instances.each {|role_name, instance| h[role_name] = instance.instance_id}
           end )
         end
         
         def remove_role_to_instance_id_mapping!
-          Awstendable::SimpleDB.delete @sdb_domain, @name
+          Awsymandias::SimpleDB.delete @sdb_domain, @name
         end
         
         def restore_from_role_to_instance_id_mapping
-          @instances = returning(Awstendable::SimpleDB.get(@sdb_domain, @name)) do |mapping|
+          @instances = returning(Awsymandias::SimpleDB.get(@sdb_domain, @name)) do |mapping|
             unless mapping.empty?
-              live_instances = Awstendable::EC2::Instance.find(:all, :instance_ids => mapping.values.flatten).index_by(&:instance_id)
+              live_instances = Awsymandias::EC2::Instance.find(:all, :instance_ids => mapping.values.flatten).index_by(&:instance_id)
               mapping.each do |role_name, instance_id|
                 mapping[role_name] = live_instances[instance_id.first]
               end
@@ -289,8 +289,8 @@ module Awstendable
     class << self
       def connection(opts={})
         @connection ||= ::AwsSdb::Service.new({
-          :access_key_id     => Awstendable.access_key_id     || ENV['AMAZON_ACCESS_KEY_ID'],
-          :secret_access_key => Awstendable.secret_access_key || ENV['AMAZON_SECRET_ACCESS_KEY']
+          :access_key_id     => Awsymandias.access_key_id     || ENV['AMAZON_ACCESS_KEY_ID'],
+          :secret_access_key => Awsymandias.secret_access_key || ENV['AMAZON_SECRET_ACCESS_KEY']
         }.merge(opts))
       end
       
@@ -309,7 +309,7 @@ module Awstendable
       private
       
         def domain_exists?(domain)
-          Awstendable::SimpleDB.connection.list_domains[0].include?(domain)
+          Awsymandias::SimpleDB.connection.list_domains[0].include?(domain)
         end      
       
         def handle_domain(domain)
