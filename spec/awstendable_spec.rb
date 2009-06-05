@@ -3,36 +3,44 @@ require 'spec'
 require File.dirname(__FILE__) + "/../lib/awstendable"
 
 describe Awstendable::EC2::Instance do
-  describe "connection" do
-    after :each do
-      Awstendable::EC2.access_key_id     = nil
-      Awstendable::EC2.secret_access_key = nil
-      ENV['AMAZON_ACCESS_KEY_ID']        = nil
-      ENV['AMAZON_SECRET_ACCESS_KEY']    = nil
-      Awstendable::EC2.reset_connection
+  before :each do
+    @simpledb = SimpleDBStub.new
+    Awstendable::SimpleDB.stub!(:connection).and_return @simpledb
+  end
+  
+  class SimpleDBStub
+    def initialize
+      @store = {}
     end
-    
-    it "configure EC2::Base with its own configured access keys" do
-      Awstendable::EC2.access_key_id = "configured key"
-      Awstendable::EC2.secret_access_key = "configured secret"
+
+    def list_domains
+      [ @store.keys ]
+    end
+
+    def put_attributes(domain, name, attributes)
+      @store[domain][name] = attributes
+    end
+
+    def get_attributes(domain, name)
+      @store[domain][name]
+    end
+
+    def create_domain(domain)
+      @store[domain] = {}
+    end
+  end
+  
+  describe "connection" do
+    it "configure an instance of EC2::Base" do
+      Awstendable.access_key_id = "configured key"
+      Awstendable.secret_access_key = "configured secret"
       
       ::EC2::Base.should_receive(:new).
         with(hash_including(:access_key_id => "configured key", :secret_access_key => "configured secret")).
         and_return(:a_connection)
       
       Awstendable::EC2.connection.should == :a_connection
-    end
-    
-    it "should default to the environment access keys if not expclitly configured" do
-      ENV['AMAZON_ACCESS_KEY_ID'] = "environment key"
-      ENV['AMAZON_SECRET_ACCESS_KEY'] = "environment secret"
-      
-      ::EC2::Base.should_receive(:new).
-        with(hash_including(:access_key_id => "environment key", :secret_access_key => "environment secret")).
-        and_return(:a_connection)
-      
-      Awstendable::EC2.connection.should == :a_connection
-    end
+    end    
   end
   
   DESCRIBE_INSTANCES_NO_RESULTS_XML = {
@@ -365,6 +373,15 @@ end
 describe Awstendable::EC2::ApplicationStack do
   ApplicationStack = Awstendable::EC2::ApplicationStack
   
+  before :each do
+    @simpledb = SimpleDBStub.new
+    Awstendable::SimpleDB.stub!(:connection).and_return @simpledb
+  end
+  
+  def stub_instance(stubs={})
+    Awstendable::EC2::Instance.new(stubs.merge(:instance_id => "i-12345a3c"))
+  end
+  
   it "should have a name" do
     ApplicationStack.new("foo").name.should == "foo"
   end
@@ -430,39 +447,40 @@ describe Awstendable::EC2::ApplicationStack do
     end
   end
     
-  # describe "launch" do    
-  #   it "should launch its roles when launched" do
-  #     s = ApplicationStack.new("test") do |s| 
-  #       s.role "db1",  :instance_type => Awstendable::EC2::InstanceTypes::C1_XLARGE
-  #       s.role "app1", :instance_type => Awstendable::EC2::InstanceTypes::M1_LARGE
-  #     end
-  #   
-  #     Awstendable::EC2::Instance.should_receive(:launch).with({ :instance_type => Awstendable::EC2::InstanceTypes::C1_XLARGE }).and_return(mock("instance1", :instance_id => "a"))
-  #     Awstendable::EC2::Instance.should_receive(:launch).with({ :instance_type => Awstendable::EC2::InstanceTypes::M1_LARGE }).and_return(mock("instance2", :instance_id => "b"))
-  #   
-  #     s.launch
-  #   end
-  #   
-  #   it "should set the getter for the particular instance to the return value of launching the instance" do      
-  #     s = AWS::EC2::ApplicationStack.new do |s| 
-  #       s.role "db1",  :instance_type => Awstendable::EC2::InstanceTypes::C1_XLARGE
-  #       s.role "app1", :instance_type => Awstendable::EC2::InstanceTypes::M1_LARGE
-  #     end
-  #     
-  #     instances = [ stub_instance, stub_instance ]
-  #     
-  #     Awstendable::EC2::Instance.stub!(:launch).with({ :instance_type => Awstendable::EC2::InstanceTypes::C1_XLARGE }).and_return instances.first
-  #     Awstendable::EC2::Instance.stub!(:launch).with({ :instance_type => Awstendable::EC2::InstanceTypes::M1_LARGE }).and_return instances.last
-  #     
-  #     s.db1.should be_nil
-  #     s.app1.should be_nil
-  #           
-  #     s.launch
-  #     
-  #     s.db1.should == instances.first
-  #     s.app1.should == instances.last
-  #   end
-  # end
+  describe "launch" do        
+    it "should launch its roles when launched" do
+      s = ApplicationStack.new("test") do |s| 
+        s.role "db1",  :instance_type => Awstendable::EC2::InstanceTypes::C1_XLARGE
+        s.role "app1", :instance_type => Awstendable::EC2::InstanceTypes::M1_LARGE
+      end
+    
+      Awstendable::EC2::Instance.should_receive(:launch).with({ :instance_type => Awstendable::EC2::InstanceTypes::C1_XLARGE }).and_return(mock("instance1", :instance_id => "a"))
+      Awstendable::EC2::Instance.should_receive(:launch).with({ :instance_type => Awstendable::EC2::InstanceTypes::M1_LARGE }).and_return(mock("instance2", :instance_id => "b"))
+    
+      s.launch
+    end
+    
+    it "should set the getter for the particular instance to the return value of launching the instance" do      
+      s = Awstendable::EC2::ApplicationStack.new("test") do |s| 
+        s.role "db1",  :instance_type => Awstendable::EC2::InstanceTypes::C1_XLARGE
+        s.role "app1", :instance_type => Awstendable::EC2::InstanceTypes::M1_LARGE
+      end
+      
+      instances = [ stub_instance, stub_instance ]
+      
+      Awstendable::EC2::Instance.stub!(:launch).with({ :instance_type => Awstendable::EC2::InstanceTypes::C1_XLARGE }).and_return instances.first
+      Awstendable::EC2::Instance.stub!(:launch).with({ :instance_type => Awstendable::EC2::InstanceTypes::M1_LARGE }).and_return instances.last
+      
+      s.db1.should be_nil
+      s.app1.should be_nil
+            
+      s.launch
+      
+      s.db1.should == instances.first
+      s.app1.should == instances.last
+    end
+    
+  end
   # 
   # describe "launched?" do    
   #   it "should be false initially" do
@@ -544,4 +562,19 @@ describe Awstendable::EC2::ApplicationStack do
   #     s.terminate!      
   #   end
   # end
+end
+
+describe Awstendable::SimpleDB do
+  describe "connection" do
+    it "configure an instance of AwsSdb::Service" do
+      Awstendable.access_key_id = "configured key"
+      Awstendable.secret_access_key = "configured secret"
+      
+      ::AwsSdb::Service.should_receive(:new).
+        with(hash_including(:access_key_id => "configured key", :secret_access_key => "configured secret")).
+        and_return(:a_connection)
+      
+      Awstendable::SimpleDB.connection.should == :a_connection
+    end
+  end
 end

@@ -5,22 +5,32 @@ require 'activesupport'
 require 'activeresource'
 
 module Awstendable
+  class << self
+    attr_writer :access_key_id, :secret_access_key
+    
+    def access_key_id
+      @access_key_id || AMAZON_ACCESS_KEY_ID || ENV['AMAZON_ACCESS_KEY_ID'] 
+    end
+    
+    def secret_access_key
+      @secret_access_key || AMAZON_SECRET_ACCESS_KEY || ENV['AMAZON_SECRET_ACCESS_KEY']
+    end
+  end
+  
   module EC2
     class << self
       # Define the values for AMAZON_ACCESS_KEY_ID and AMAZON_SECRET_ACCESS_KEY_ID to allow for automatic
       # connection creation.
       def connection
         @connection ||= ::EC2::Base.new(
-          :access_key_id     => self.access_key_id     || ENV['AMAZON_ACCESS_KEY_ID'],
-          :secret_access_key => self.secret_access_key || ENV['AMAZON_SECRET_ACCESS_KEY']
+          :access_key_id     => Awstendable.access_key_id     || ENV['AMAZON_ACCESS_KEY_ID'],
+          :secret_access_key => Awstendable.secret_access_key || ENV['AMAZON_SECRET_ACCESS_KEY']
         )
       end
       
       def reset_connection
         @connection = nil
-      end
-      
-      attr_accessor :access_key_id, :secret_access_key
+      end      
     end
     
     # All currently available instance times.
@@ -221,7 +231,7 @@ module Awstendable
       
       def launch
         @roles.each do |name, params| # TODO Optimize this for a single remote call.
-          @instances[name] = AWS::EC2::Instance.launch(params)
+          @instances[name] = Awstendable::EC2::Instance.launch(params)
         end
         store_role_to_instance_id_mapping!
         self
@@ -264,21 +274,21 @@ module Awstendable
           mapping = returning({}) do |h|
             @instances.each {|role_name, instance| h[role_name] = instance.instance_id}
           end
-          AWS::SimpleDB.connection.put_attributes @sdb_domain, @name, mapping
+          Awstendable::SimpleDB.connection.put_attributes @sdb_domain, @name, mapping
         end
         
         def remove_role_to_instance_id_mapping!
           create_domain_if_necessary
-          AWS::SimpleDB.connection.delete_attributes @sdb_domain, @name
+          Awstendable::SimpleDB.connection.delete_attributes @sdb_domain, @name
         end
         
         def restore_from_role_to_instance_id_mapping
           create_domain_if_necessary
           @instances.clear!
           
-          stored_mapping = AWS::SimpleDB.connection.get_attributes(@sdb_domain, @name) || {}
+          stored_mapping = Awstendable::SimpleDB.connection.get_attributes(@sdb_domain, @name) || {}
           unless stored_mapping.empty?
-            live_instances = AWS::EC2::Instance.find(:all, :instance_ids => stored_mapping.values.flatten).index_by(&:instance_id)
+            live_instances = Awstendable::EC2::Instance.find(:all, :instance_ids => stored_mapping.values.flatten).index_by(&:instance_id)
             stored_mapping.each do |role_name, instance_id|
               @instances[role_name] = live_instances[instance_id.first]
             end
@@ -287,36 +297,13 @@ module Awstendable
         end
         
         def create_domain_if_necessary
-          unless AWS::SimpleDB.connection.list_domains[0].include?(@sdb_domain)
-            AWS::SimpleDB.connection.create_domain(@sdb_domain)
+          unless Awstendable::SimpleDB.connection.list_domains[0].include?(@sdb_domain)
+            Awstendable::SimpleDB.connection.create_domain(@sdb_domain)
           end
         end
     end
   end
-  
-  class InstanceList
-    include Enumerable
-    
-    def initialize(name, sdb_domain)
-      @name = name
-      @list = []
-      create_domain_if_necessary(sdb_domain)
-    end
-    
-    def each(&block); @list.each(&block); end
-    
-    def <<(instance)
       
-    end
-    
-    private
-      def create_domain_if_necessary
-        unless AWS::SimpleDB.connection.list_domains[0].include?(sdb_domain)
-          AWS::SimpleDB.connection.create_domain(sdb_domain)
-        end      
-      end
-  end
-    
   module S3
     module DefaultConnection
       def connection_with_defaults(*args)
@@ -334,12 +321,38 @@ module Awstendable
     AWS::S3::Base.send :extend, DefaultConnection
     AWS::S3::Base.metaclass.send :alias_method_chain, :connection, :defaults
   end
-  
+
+  # TODO Locate a nicer SimpleDB API and get out of the business of maintaining this one.
   module SimpleDB
     class << self
       def connection(opts={})
-        @connection ||= ::AwsSdb::Service.new(opts)
+        @connection ||= ::AwsSdb::Service.new({
+          :access_key_id     => Awstendable.access_key_id     || ENV['AMAZON_ACCESS_KEY_ID'],
+          :secret_access_key => Awstendable.secret_access_key || ENV['AMAZON_SECRET_ACCESS_KEY']
+        }.merge(opts))
       end
+      
+      def reset_connection
+        @connection = nil
+      end
+      
+      def put(domain, name, stuff)
+        connection.put_attributes handle_domain(domain), name, stuff
+      end
+      
+      def get(domain, name)
+        connection.get_attributes(handle_domain(domain), name) || {}
+      end
+            
+      private
+      
+        def domain_exists?(domain)
+          Awstendable::SimpleDB.connection.list_domains[0].include?(domain)
+        end      
+      
+        def handle_domain(domain)
+          returning(domain) { connection.create_domain(domain) unless domain_exists?(domain) }
+        end
     end
   end
 end
