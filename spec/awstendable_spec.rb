@@ -2,36 +2,9 @@ require 'rubygems'
 require 'spec'
 require File.dirname(__FILE__) + "/../lib/awstendable"
 
-describe Awstendable::EC2::Instance do
-  before :each do
-    @simpledb = SimpleDBStub.new
-    Awstendable::SimpleDB.stub!(:connection).and_return @simpledb
-  end
-  
-  class SimpleDBStub
-    def initialize
-      @store = {}
-    end
-
-    def list_domains
-      [ @store.keys ]
-    end
-
-    def put_attributes(domain, name, attributes)
-      @store[domain][name] = attributes
-    end
-
-    def get_attributes(domain, name)
-      @store[domain][name]
-    end
-
-    def create_domain(domain)
-      @store[domain] = {}
-    end
-  end
-  
+describe Awstendable::EC2::Instance do  
   describe "connection" do
-    it "configure an instance of EC2::Base" do
+    it "should configure an instance of EC2::Base" do
       Awstendable.access_key_id = "configured key"
       Awstendable.secret_access_key = "configured secret"
       
@@ -372,16 +345,45 @@ end
 
 describe Awstendable::EC2::ApplicationStack do
   ApplicationStack = Awstendable::EC2::ApplicationStack
+  Instance         = Awstendable::EC2::Instance
+  
+  class SimpleDBStub
+    def initialize
+      @store = {}
+    end
+
+    def list_domains
+      [ @store.keys ]
+    end
+
+    def put_attributes(domain, name, attributes)
+      @store[domain][name] = attributes
+    end
+
+    def get_attributes(domain, name)
+      @store[domain][name]
+    end
+    
+    def delete_attributes(domain, name)
+      @store[domain][name] = nil
+    end
+
+    def create_domain(domain)
+      @store[domain] = {}
+    end
+  end
+  
+  attr_accessor :simpledb
+  
+  def stub_instance(stubs={})
+    Instance.new({:instance_id => "i-12345a3c"}.merge(stubs))
+  end
   
   before :each do
     @simpledb = SimpleDBStub.new
     Awstendable::SimpleDB.stub!(:connection).and_return @simpledb
   end
-  
-  def stub_instance(stubs={})
-    Awstendable::EC2::Instance.new(stubs.merge(:instance_id => "i-12345a3c"))
-  end
-  
+    
   it "should have a name" do
     ApplicationStack.new("foo").name.should == "foo"
   end
@@ -447,29 +449,29 @@ describe Awstendable::EC2::ApplicationStack do
     end
   end
     
-  describe "launch" do        
+  describe "launch" do
     it "should launch its roles when launched" do
       s = ApplicationStack.new("test") do |s| 
         s.role "db1",  :instance_type => Awstendable::EC2::InstanceTypes::C1_XLARGE
         s.role "app1", :instance_type => Awstendable::EC2::InstanceTypes::M1_LARGE
       end
     
-      Awstendable::EC2::Instance.should_receive(:launch).with({ :instance_type => Awstendable::EC2::InstanceTypes::C1_XLARGE }).and_return(mock("instance1", :instance_id => "a"))
-      Awstendable::EC2::Instance.should_receive(:launch).with({ :instance_type => Awstendable::EC2::InstanceTypes::M1_LARGE }).and_return(mock("instance2", :instance_id => "b"))
+      Instance.should_receive(:launch).with({ :instance_type => Awstendable::EC2::InstanceTypes::C1_XLARGE }).and_return(mock("instance1", :instance_id => "a"))
+      Instance.should_receive(:launch).with({ :instance_type => Awstendable::EC2::InstanceTypes::M1_LARGE }).and_return(mock("instance2", :instance_id => "b"))
     
       s.launch
     end
     
     it "should set the getter for the particular instance to the return value of launching the instance" do      
-      s = Awstendable::EC2::ApplicationStack.new("test") do |s| 
+      s = ApplicationStack.new("test") do |s| 
         s.role "db1",  :instance_type => Awstendable::EC2::InstanceTypes::C1_XLARGE
         s.role "app1", :instance_type => Awstendable::EC2::InstanceTypes::M1_LARGE
       end
       
       instances = [ stub_instance, stub_instance ]
       
-      Awstendable::EC2::Instance.stub!(:launch).with({ :instance_type => Awstendable::EC2::InstanceTypes::C1_XLARGE }).and_return instances.first
-      Awstendable::EC2::Instance.stub!(:launch).with({ :instance_type => Awstendable::EC2::InstanceTypes::M1_LARGE }).and_return instances.last
+      Instance.stub!(:launch).with({ :instance_type => Awstendable::EC2::InstanceTypes::C1_XLARGE }).and_return instances.first
+      Instance.stub!(:launch).with({ :instance_type => Awstendable::EC2::InstanceTypes::M1_LARGE }).and_return instances.last
       
       s.db1.should be_nil
       s.app1.should be_nil
@@ -480,21 +482,38 @@ describe Awstendable::EC2::ApplicationStack do
       s.app1.should == instances.last
     end
     
+    it "should store details about the newly launched instances" do
+      Awstendable::EC2::Instance.stub!(:launch).and_return stub_instance(:instance_id => "abc123")
+      Awstendable::EC2::ApplicationStack.new("test") do |s| 
+        s.role "db1", :instance_type => Awstendable::EC2::InstanceTypes::C1_XLARGE
+      end.launch
+      
+      simpledb.get_attributes(ApplicationStack::DEFAULT_SDB_DOMAIN, "test").should == { "db1" => "abc123" }
+    end
   end
-  # 
-  # describe "launched?" do    
-  #   it "should be false initially" do
-  #     s = AWS::EC2::ApplicationStack.new {|s| s.role "db1", :instance_type => AWS::EC2::InstanceTypes::M1_LARGE}
-  #     s.should_not be_launched
-  #   end
-  #   
-  #   it "should be true if launched and instances are non-empty" do
-  #     s = AWS::EC2::ApplicationStack.new {|s| s.role "db1", :instance_type => AWS::EC2::InstanceTypes::M1_LARGE}
-  #     AWS::EC2::Instance.stub!(:launch).and_return stub_instance
-  #     s.launch
-  #     s.should be_launched
-  #   end
-  # end
+  
+  describe "launched?" do    
+    it "should be false initially" do
+      s = ApplicationStack.new("test") {|s| s.role "db1", :instance_type => Awstendable::EC2::InstanceTypes::M1_LARGE}
+      s.should_not be_launched
+    end
+    
+    it "should be true if launched and instances are non-empty" do
+      s = ApplicationStack.new("test") { |s| s.role "db1" }
+      Awstendable::EC2::Instance.stub!(:launch).and_return stub_instance
+      s.launch
+      s.should be_launched
+    end
+    
+    it "should attempt to determine whether or not it's been previously launched" do
+      Awstendable::SimpleDB.put ApplicationStack::DEFAULT_SDB_DOMAIN, "test", "db1" => ["instance_id"]
+      an_instance = stub_instance :instance_id => "instance_id"
+      Instance.should_receive(:find).with(:all, :instance_ids => [ "instance_id" ]).and_return [ an_instance ]
+      s = ApplicationStack.new("test") { |s| s.role "db1" }
+      s.should be_launched
+      s.db1.should == an_instance
+    end
+  end
   # 
   # describe "running?" do
   #   it "should be false initially" do
@@ -546,22 +565,31 @@ describe Awstendable::EC2::ApplicationStack do
   #   end
   # end
   # 
-  # describe "terminate!" do
-  #   it "should not do anything if not running" do
-  #     s = AWS::EC2::ApplicationStack.new {|s| s.role "db1", :instance_type => AWS::EC2::InstanceTypes::M1_LARGE}
-  #     AWS::EC2.should_receive(:connection).never
-  #     s.terminate!
-  #   end
-  #   
-  #   it "should terminate all instances if running" do
-  #     s = AWS::EC2::ApplicationStack.new {|s| s.role "db1", :instance_type => AWS::EC2::InstanceTypes::M1_LARGE}
-  #     mock_instance = mock("an_instance", :instance_id => "i-foo")
-  #     mock_instance.should_receive(:terminate!)
-  #     AWS::EC2::Instance.stub!(:launch).and_return(mock_instance)
-  #     s.launch
-  #     s.terminate!      
-  #   end
-  # end
+  describe "terminate!" do
+    it "should not do anything if not running" do
+      s = ApplicationStack.new("test") { |s| s.role "db1" }
+      Awstendable::EC2.should_receive(:connection).never
+      s.terminate!
+    end
+    
+    it "should terminate all instances if running" do
+      s = ApplicationStack.new("test") { |s| s.role "db1" }
+      mock_instance = mock("an_instance", :instance_id => "i-foo")
+      mock_instance.should_receive(:terminate!)
+      Instance.stub!(:launch).and_return(mock_instance)
+      s.launch
+      s.terminate!      
+    end
+    
+    it "should remove any stored role name mappings" do
+      Awstendable::SimpleDB.put ApplicationStack::DEFAULT_SDB_DOMAIN, "test", "db1" => ["instance_id"]
+      s = ApplicationStack.new("test") { |s| s.role "db1" }
+      Instance.stub!(:launch).and_return stub_everything
+      s.launch
+      s.terminate!
+      Awstendable::SimpleDB.get(ApplicationStack::DEFAULT_SDB_DOMAIN, "test").should be_blank
+    end
+  end
 end
 
 describe Awstendable::SimpleDB do

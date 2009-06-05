@@ -270,30 +270,24 @@ module Awstendable
         end
               
         def store_role_to_instance_id_mapping!
-          create_domain_if_necessary
-          mapping = returning({}) do |h|
+          Awstendable::SimpleDB.put @sdb_domain, @name, ( returning({}) do |h|
             @instances.each {|role_name, instance| h[role_name] = instance.instance_id}
-          end
-          Awstendable::SimpleDB.connection.put_attributes @sdb_domain, @name, mapping
+          end )
         end
         
         def remove_role_to_instance_id_mapping!
-          create_domain_if_necessary
-          Awstendable::SimpleDB.connection.delete_attributes @sdb_domain, @name
+          Awstendable::SimpleDB.delete @sdb_domain, @name
         end
         
         def restore_from_role_to_instance_id_mapping
-          create_domain_if_necessary
-          @instances.clear!
-          
-          stored_mapping = Awstendable::SimpleDB.connection.get_attributes(@sdb_domain, @name) || {}
-          unless stored_mapping.empty?
-            live_instances = Awstendable::EC2::Instance.find(:all, :instance_ids => stored_mapping.values.flatten).index_by(&:instance_id)
-            stored_mapping.each do |role_name, instance_id|
-              @instances[role_name] = live_instances[instance_id.first]
+          @instances = returning(Awstendable::SimpleDB.get(@sdb_domain, @name)) do |mapping|
+            unless mapping.empty?
+              live_instances = Awstendable::EC2::Instance.find(:all, :instance_ids => mapping.values.flatten).index_by(&:instance_id)
+              mapping.each do |role_name, instance_id|
+                mapping[role_name] = live_instances[instance_id.first]
+              end
             end
           end
-          @instances
         end
         
         def create_domain_if_necessary
@@ -323,7 +317,7 @@ module Awstendable
   end
 
   # TODO Locate a nicer SimpleDB API and get out of the business of maintaining this one.
-  module SimpleDB
+  module SimpleDB # :nodoc
     class << self
       def connection(opts={})
         @connection ||= ::AwsSdb::Service.new({
@@ -342,6 +336,10 @@ module Awstendable
       
       def get(domain, name)
         connection.get_attributes(handle_domain(domain), name) || {}
+      end
+      
+      def delete(domain, name)
+        connection.delete_attributes handle_domain(domain), name
       end
             
       private
