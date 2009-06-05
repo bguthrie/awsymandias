@@ -1,6 +1,6 @@
 require 'rubygems'
 require 'spec'
-require File.dirname(__FILE__) + "/../lib/awstendable"
+require File.dirname(__FILE__) + "/../lib/awsymandias"
 
 describe Awsymandias::EC2::Instance do  
   describe "connection" do
