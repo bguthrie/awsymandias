@@ -26,6 +26,6 @@ Jeweler::Tasks.new do |s|
   
   s.add_dependency 'activesupport', '>= 2.3.0'
   s.add_dependency 'activeresource', '>= 2.3.0'
-  s.add_dependency 'bguthrie-aws-sdb', '>= 0.4.0'
-  s.add_dependency 'grempe-amazon-ec2', '>= 0.3.8'
+  s.add_dependency 'hungryblank-aws-sdb', '>= 0.4.0'
+  s.add_dependency 'grempe-amazon-ec2', '>= 0.4.2'
 end
