@@ -1,5 +1,8 @@
+Dir[File.dirname(__FILE__) + "/../vendor/**/lib"].each { |dir| $: << dir }
+
 require 'EC2'
 require 'aws_sdb'
+require 'money'
 require 'activesupport'
 require 'activeresource'
 
@@ -26,19 +29,31 @@ module Awsymandias
           :secret_access_key => Awsymandias.secret_access_key || ENV['AMAZON_SECRET_ACCESS_KEY']
         )
       end
+      
+      def instance_types
+        [ 
+          Awsymandias::EC2::InstanceTypes::M1_SMALL, 
+          Awsymandias::EC2::InstanceTypes::M1_LARGE, 
+          Awsymandias::EC2::InstanceTypes::M1_XLARGE, 
+          Awsymandias::EC2::InstanceTypes::C1_MEDIUM, 
+          Awsymandias::EC2::InstanceTypes::C1_XLARGE 
+        ].index_by(&:name)
+      end
     end
     
-    # All currently available instance times.
+    InstanceType = Struct.new(:name, :price_per_hour)
+    
+    # All currently available instance types.
     # TODO Generate dynamically.
     module InstanceTypes
-      M1_SMALL = "m1.small"
-      M1_LARGE = "m1.large"
-      M1_XLARGE = "m1.xlarge"
-    
-      C1_MEDIUM = "c1.medium"
-      C1_XLARGE = "c1.xlarge"
+      M1_SMALL  = InstanceType.new("m1.small",  Money.new(10))
+      M1_LARGE  = InstanceType.new("m1.large",  Money.new(40))
+      M1_XLARGE = InstanceType.new("m1.xlarge", Money.new(80))
+
+      C1_MEDIUM = InstanceType.new("c1.medium", Money.new(20))
+      C1_XLARGE = InstanceType.new("c1.xlarge", Money.new(80))
     end
-    
+        
     # All currently availability zones.
     # TODO Generate dynamically.
     module AvailabilityZones
@@ -62,6 +77,10 @@ module Awsymandias
       def id;          instance_id;      end
       def public_dns;  dns_name;         end
       def private_dns; private_dns_name; end
+    
+      def pending?
+        instance_state.name == "pending"
+      end
     
       def running?
         instance_state.name == "running"
@@ -91,6 +110,24 @@ module Awsymandias
           :instance_type => self.instance_type,
           :availability_zone => self.placement.availability_zone
         }
+      end
+      
+      def instance_type
+        Awsymandias::EC2.instance_types[@attributes['instance_type']]
+      end
+      
+      def launch_time
+        Time.parse(@attributes['launch_time'])
+      end
+      
+      def uptime
+        return 0.seconds if pending?
+        Time.now - self.launch_time
+      end
+      
+      def running_cost
+        return Money.new(0) if pending?
+        instance_type.price_per_hour * (uptime / 1.hour).ceil 
       end
         
       class << self
@@ -128,9 +165,9 @@ module Awsymandias
         end
       
         def launch(opts={})
-          opts.assert_valid_keys! :image_id, :key_name, :instance_type, :availability_zone
+          opts.assert_valid_keys! :image_id, :key_name, :instance_type, :availability_zone, :user_data
         
-          opts[:user_data] &&= opts[:user_data].to_json
+          opts[:instance_type] = opts[:instance_type].name if opts[:instance_type].is_a?(Awsymandias::EC2::InstanceType)
         
           response = Awsymandias::EC2.connection.run_instances opts
           instance_id = response["instancesSet"]["item"].map {|h| h["instanceId"]}.first
@@ -138,48 +175,7 @@ module Awsymandias
         end
       end
     end
-  
-    # A class designed to provide simple Rake task generation for launching EC2 instances.
-    class InstanceLaunchTask
-      attr_accessor :ami_id, :instance_type, :availability_zone, :key_name
-    
-      def initialize(name, desc="Spin up a new EC2 instance")
-        @name, @desc = name, desc
-        yield self
-        define
-      end
-    
-      def define
-        desc @desc
-        task @name do
-          EC2::Instance.launch(
-            :ami_id => ami_id, 
-            :instance_type => instance_type, 
-            :availability_zone => availability_zone, 
-            :key_name => key_name
-          )
-        
-          puts "Instance ID is #{instance.id}"
-        end
       
-        desc "#{@desc} (waits for startup)"
-        task "#{@name}_blocked" do
-          instance = EC2::Instance.launch(
-            :ami_id => ami_id, 
-            :instance_type => instance_type, 
-            :availability_zone => availability_zone, 
-            :key_name => key_name
-          )
-        
-          until instance.reload.running?
-            sleep(5)
-          end
-        
-          puts "Instance ID is #{instance.id}, public DNS is #{instance.dns_name}, private DNS is #{instance.private_dns_name}"
-        end
-      end
-    end
-    
     # Goal:
     # stack = EC2::ApplicationStack.new do |stack|
     #   stack.role "db", :instance_type => EC2::InstanceTypes::C1_XLARGE, :image_id => "ami-3576915c"

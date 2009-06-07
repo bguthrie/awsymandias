@@ -13,7 +13,7 @@ task :default => [:spec]
 
 desc "Open an irb session preloaded with this library"
 task :console do
-  sh "irb -rubygems -I lib -r lib/awsymandias"
+  sh "irb -rubygems -I lib -r awsymandias"
 end
 
 Jeweler::Tasks.new do |s|
@@ -26,6 +26,6 @@ Jeweler::Tasks.new do |s|
   
   s.add_dependency 'activesupport', '>= 2.3.0'
   s.add_dependency 'activeresource', '>= 2.3.0'
-  s.add_dependency 'hungryblank-aws-sdb', '>= 0.4.0'
   s.add_dependency 'grempe-amazon-ec2', '>= 0.4.2'
+  s.add_dependency 'money', '>= 2.1.3'
 end

@@ -1,11 +1,15 @@
+= Awsymandias
+
 == Description
 
-Awsymandias is a library that helps you set up and tear down complicated AWS environments. In addition to offering a clean, literate domain model for working with instances it allows you to persist role-to-instance-id mappings to SimpleDB, allowing you to manage your full stack from multiple different machines. Here's an example:
+Awsymandias is a library that helps you set up and tear down complicated AWS environments. In addition to offering a clean, fluent domain model for working with instances and groups of instances it allows you to persist role-to-instance-id mappings to SimpleDB, allowing you to manage your stack from multiple different machines. Eventually it will allow you to add arbitrary instance metadata and help you track instance running costs over time.
+
+== Example
 
   # Give the stack a name, and describe its members.
   stack = Awsymandias::EC2::ApplicationStack.new("test") do |s|
-    s.role "db",  :instance_id => "ami-dc789fb5", :key_name => "gsg-keypair", :instance_type => "m1.large",  :availability_zone => "us-east-1c"
-    s.role "app", :instance_id => "ami-dc789fb5", :key_name => "gsg-keypair", :instance_type => "c1.xlarge", :availability_zone => "us-east-1c"
+    s.role "db",  :instance_type => "m1.large", ... 
+    s.role "app", :instance_type => "c1.xlarge", ... 
   end
 
   # Check if we're running by pulling stack description from SDB; if not, launch asynchronously.
@@ -20,7 +24,7 @@ Awsymandias is a library that helps you set up and tear down complicated AWS env
     set :app, stack.app.public_dns
   end
 
-The example given above should allow you to re-launch and deploy that AWS stack from any one of several different workstations.
+This should allow you to re-launch and deploy that AWS stack from any one of several different workstations.
 
 == License
 
