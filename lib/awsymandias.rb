@@ -241,11 +241,16 @@ module Awsymandias
       end
       
       def launched?
-        @instances.any? || restore_from_role_to_instance_id_mapping.any?
+        @instances.any? || ( @instances = retrieve_role_to_instance_id_mapping ).any?
       end
           
       def running?
         launched? && @instances.values.all?(&:running?)
+      end
+      
+      def running_cost
+        return Money.new(0) unless launched?
+        @instances.values.sum { |instance| instance.running_cost }
       end
       
       def inspect
@@ -266,8 +271,8 @@ module Awsymandias
           Awsymandias::SimpleDB.delete @sdb_domain, @name
         end
         
-        def restore_from_role_to_instance_id_mapping
-          @instances = returning(Awsymandias::SimpleDB.get(@sdb_domain, @name)) do |mapping|
+        def retrieve_role_to_instance_id_mapping
+          returning(Awsymandias::SimpleDB.get(@sdb_domain, @name)) do |mapping|
             unless mapping.empty?
               live_instances = Awsymandias::EC2::Instance.find(:all, :instance_ids => mapping.values.flatten).index_by(&:instance_id)
               mapping.each do |role_name, instance_id|

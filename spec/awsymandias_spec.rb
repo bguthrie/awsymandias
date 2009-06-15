@@ -18,9 +18,13 @@ describe Awsymandias do
     end
   end
   
-  describe Awsymandias::EC2 do
+  describe Awsymandias::EC2 do    
     def stub_connection_with(return_value)
       Awsymandias::EC2.stub!(:connection).and_return stub("a connection", :describe_instances => return_value)
+    end
+    
+    def zero_dollars
+      Money.new(0)
     end
     
     describe "connection" do
@@ -395,7 +399,7 @@ describe Awsymandias do
       describe "running_cost" do
         it "should be zero if the instance has not yet been launched" do
           stub_connection_with DESCRIBE_INSTANCES_SINGLE_RESULT_PENDING_XML
-          Awsymandias::EC2::Instance.find("i-some-instance").running_cost.should == Money.new(0)
+          Awsymandias::EC2::Instance.find("i-some-instance").running_cost.should == zero_dollars
         end
         
         it "should be a single increment if the instance was launched 5 minutes ago" do
@@ -671,6 +675,23 @@ describe Awsymandias do
           s.launch
           s.terminate!
           Awsymandias::SimpleDB.get(ApplicationStack::DEFAULT_SDB_DOMAIN, "test").should be_blank
+        end
+      end
+      
+      describe "running_cost" do
+        it "should be zero if the stack has not been launched" do
+          s = ApplicationStack.new("test") {|s| s.role "db1", :instance_type => Awsymandias::EC2::InstanceTypes::M1_LARGE}
+          s.running_cost.should == zero_dollars
+        end
+        
+        it "should be the sum total of the running cost of its constituent instances" do
+          stack = ApplicationStack.new "test"
+          stack.should_receive(:retrieve_role_to_instance_id_mapping).and_return({
+            :db  => mock(:instance, :running_cost => Money.new(10)),
+            :app => mock(:instance, :running_cost => Money.new(20))
+          })
+          
+          stack.running_cost.should == Money.new(30)
         end
       end
     end
