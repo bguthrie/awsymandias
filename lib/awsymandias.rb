@@ -174,8 +174,10 @@ module Awsymandias
           if reservation_set.nil?
             []
           else
-            reservation_set["item"].first["instancesSet"]["item"].map do |item|
-              instantiate_record(reformat_incoming_param_data(item))
+            reservation_set["item"].sum([]) do |item_set|
+              item_set["instancesSet"]["item"].map do |item|
+                instantiate_record(reformat_incoming_param_data(item))
+              end
             end
           end
         end

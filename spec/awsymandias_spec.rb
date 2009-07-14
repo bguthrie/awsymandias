@@ -114,55 +114,78 @@ describe Awsymandias do
         "requestId" => "7bca5c7c-1b51-473e-a930-611e55920e39",
         "xmlns"=>"http://ec2.amazonaws.com/doc/2008-12-01/",
         "reservationSet" => {
-          "item" => [ {
-            "reservationId" => "r-db68e3b2", 
-            "requesterId" => "058890971305", 
-            "ownerId" => "358110980006",
-            "groupSet" => { "item" => [ { "groupId" => "default" } ] }, 
-            "instancesSet" => { "item" => [ 
-              {
-                "productCodes" => nil, 
-                "kernelId" => "aki-some-kernel", 
-                "amiLaunchIndex" => "0", 
-                "keyName" => "gsg-keypair", 
-                "ramdiskId" => "ari-b31cf9da", 
-                "launchTime" => "2009-04-20T01:30:35.000Z", 
-                "instanceType" => "m1.large", 
-                "imageId" => "ami-some-image", 
-                "privateDnsName" => nil, 
-                "reason" => nil, 
-                "placement" => { 
-                  "availabilityZone" => "us-east-1c" 
-                }, 
-                "dnsName" => nil, 
-                "instanceId" => "i-some-instance", 
-                "instanceState" => {
-                  "name" => "running", 
-                  "code"=>"0" 
-                } 
-              },
-              { 
-                "productCodes" => nil, 
-                "kernelId" => "aki-some-kernel", 
-                "amiLaunchIndex" => "0", 
-                "keyName" => "gsg-keypair", 
-                "ramdiskId" => "ari-b31cf9da", 
-                "launchTime" => "2009-04-20T01:30:35.000Z", 
-                "instanceType" => "m1.large", 
-                "imageId" => "ami-some-image", 
-                "privateDnsName" => nil, 
-                "reason" => nil, 
-                "placement" => { 
-                  "availabilityZone" => "us-east-1c" 
-                }, 
-                "dnsName" => nil, 
-                "instanceId" => "i-another-instance", 
-                "instanceState" => {
-                  "name" => "pending", 
-                  "code"=>"0" 
-                } 
-              } ] } } ] } 
-      }
+          "item" => [ 
+            { "reservationId"=>"r-5b226e32",
+              "ownerId"=>"423319072129",
+              "groupSet" => { "item" => [ {"groupId"=>"default" } ] },
+              "instancesSet" => { "item" => [
+                 { "productCodes"=>nil,
+                   "kernelId"=>"aki-some-kernel",
+                   "amiLaunchIndex"=>"0",
+                   "ramdiskId"=>"ari-b31cf9da",
+                   "launchTime"=>"2009-07-14T17:47:33.000Z",
+                   "instanceType"=>"c1.xlarge",
+                   "imageId"=>"ami-some-other-image",
+                   "privateDnsName"=>nil,
+                   "reason"=>nil,
+                   "placement" => {
+                     "availabilityZone"=>"us-east-1b"
+                   },
+                   "dnsName" => nil,
+                   "instanceId"=>"i-some-other-instance",
+                   "instanceState" => { 
+                     "name"=>"running", 
+                     "code"=>"16",
+                    }
+                  }
+                ] } },
+            { "reservationId" => "r-db68e3b2", 
+              "requesterId" => "058890971305", 
+              "ownerId" => "358110980006",
+              "groupSet" => { "item" => [ { "groupId" => "default" } ] }, 
+              "instancesSet" => { "item" => [ 
+                { "productCodes" => nil, 
+                  "kernelId" => "aki-some-kernel", 
+                  "amiLaunchIndex" => "0", 
+                  "keyName" => "gsg-keypair", 
+                  "ramdiskId" => "ari-b31cf9da", 
+                  "launchTime" => "2009-04-20T01:30:35.000Z", 
+                  "instanceType" => "m1.large", 
+                  "imageId" => "ami-some-image", 
+                  "privateDnsName" => nil, 
+                  "reason" => nil, 
+                  "placement" => { 
+                    "availabilityZone" => "us-east-1c" 
+                  }, 
+                  "dnsName" => nil, 
+                  "instanceId" => "i-some-instance", 
+                  "instanceState" => {
+                    "name" => "running", 
+                    "code"=>"0" 
+                  } },
+                { "productCodes" => nil, 
+                  "kernelId" => "aki-some-kernel", 
+                  "amiLaunchIndex" => "0", 
+                  "keyName" => "gsg-keypair", 
+                  "ramdiskId" => "ari-b31cf9da", 
+                  "launchTime" => "2009-04-20T01:30:35.000Z", 
+                  "instanceType" => "m1.large", 
+                  "imageId" => "ami-some-image", 
+                  "privateDnsName" => nil, 
+                  "reason" => nil, 
+                  "placement" => { 
+                    "availabilityZone" => "us-east-1c" 
+                  }, 
+                  "dnsName" => nil, 
+                  "instanceId" => "i-another-instance", 
+                  "instanceState" => {
+                    "name" => "pending", 
+                    "code"=>"0" 
+                  } 
+                } ] } }
+              ]
+            } 
+          }
   
       RUN_INSTANCES_SINGLE_RESULT_XML = {
         "reservationId" => "r-276ee54e", 
@@ -264,7 +287,9 @@ describe Awsymandias do
     
         it "should return more than one object if multiple IDs are requested" do
           stub_connection_with DESCRIBE_INSTANCES_MULTIPLE_RESULTS_RUNNING_XML
-          Instance.find(:all, :instance_ids => ["i-some-instance", "i-another-instance"]).map(&:instance_id).should == [ "i-some-instance", "i-another-instance" ]
+          Instance.find(:all, :instance_ids => ["i-some-other-instance", "i-some-instance", "i-another-instance"]).map do |instance|
+            instance.instance_id
+          end.should == ["i-some-other-instance", "i-some-instance", "i-another-instance"]
         end
     
         it "should map camelized XML properties to Ruby-friendly underscored method names" do
