@@ -45,7 +45,7 @@ This should allow you to re-launch and deploy that AWS stack from any one of sev
 
 == Contributors
 
-* Paul Gross (pgross@gmail.com)
+* {Paul Gross}[http://www.pgrs.net] {github}[http://github.com/pgr0ss] {email}[mailto:pgross@gmail.com]
 * Rob Sweet (rob@ldg.net)
 
 == License
