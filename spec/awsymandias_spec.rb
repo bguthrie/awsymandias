@@ -97,12 +97,12 @@ describe Awsymandias do
               "launchTime" => "2009-04-20T01:30:35.000Z", 
               "instanceType" => "m1.large", 
               "imageId" => "ami-some-image", 
-              "privateDnsName" => nil, 
+              "privateDnsName" => "ip-10-244-226-239.ec2.internal", 
               "reason" => nil, 
               "placement" => { 
                 "availabilityZone" => "us-east-1c" 
               }, 
-              "dnsName" => nil, 
+              "dnsName" => "ec2-174-129-118-52.compute-1.amazonaws.com", 
               "instanceId" => "i-some-instance", 
               "instanceState" => {
                 "name" => "running", 
@@ -393,6 +393,34 @@ describe Awsymandias do
           stub_connection_with DESCRIBE_INSTANCES_SINGLE_RESULT_RUNNING_XML
           instance = Awsymandias::EC2::Instance.find("i-some-instance")
           instance.uptime.should == (time_now - instance.launch_time)
+        end
+      end
+
+      describe "public_dns" do
+        it "should return the public dns from the xml" do
+          stub_connection_with DESCRIBE_INSTANCES_SINGLE_RESULT_RUNNING_XML 
+          Awsymandias::EC2::Instance.find("i-some-instance").public_dns.should == "ec2-174-129-118-52.compute-1.amazonaws.com"
+        end
+      end
+      
+      describe "public_ip" do
+        it "should parse the public dns to get the public IP address" do
+          stub_connection_with DESCRIBE_INSTANCES_SINGLE_RESULT_RUNNING_XML 
+          Awsymandias::EC2::Instance.find("i-some-instance").public_ip.should == "174.129.118.52"
+        end
+      end
+
+      describe "private_dns" do
+        it "should return the private dns from the xml" do
+          stub_connection_with DESCRIBE_INSTANCES_SINGLE_RESULT_RUNNING_XML 
+          Awsymandias::EC2::Instance.find("i-some-instance").private_dns.should == "ip-10-244-226-239.ec2.internal"
+        end
+      end
+
+      describe "private_ip" do
+        it "should parse the private dns to get the private IP address" do
+          stub_connection_with DESCRIBE_INSTANCES_SINGLE_RESULT_RUNNING_XML 
+          Awsymandias::EC2::Instance.find("i-some-instance").private_ip.should == "10.244.226.239"
         end
       end
   
