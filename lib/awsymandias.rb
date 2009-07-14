@@ -19,6 +19,25 @@ module Awsymandias
     end
   end
   
+  module Support
+    module Hash
+      # Ganked from ActiveResource 2.3.2.
+      def reformat_incoming_param_data(params)
+        case params.class.to_s
+          when "Hash"
+            params.inject({}) do |h,(k,v)|
+              h[k.to_s.underscore.tr("-", "_")] = reformat_incoming_param_data(v)
+              h
+            end
+          when "Array"
+            params.map { |v| reformat_incoming_param_data(v) }
+          else
+            params
+        end
+      end
+    end
+  end
+  
   module EC2
     class << self
       # Define the values for AMAZON_ACCESS_KEY_ID and AMAZON_SECRET_ACCESS_KEY_ID to allow for automatic
@@ -69,9 +88,9 @@ module Awsymandias
     # It wraps the simple hash structures returned by the EC2 gem with a domain model.
     # It inherits from ARes::B in order to provide simple XML <-> domain model mapping.
     class Instance < ActiveResource::Base
-      include ActiveSupport::CoreExtensions::Hash::Conversions::ClassMethods 
-      extend  ActiveSupport::CoreExtensions::Hash::Conversions::ClassMethods # unrename_keys
-    
+      include Awsymandias::Support::Hash
+      extend  Awsymandias::Support::Hash # reformat_incoming_param_data
+      
       self.site = "mu"
     
       def id;          instance_id;      end
@@ -104,7 +123,7 @@ module Awsymandias
       end
     
       def reload
-        load(unrename_keys(
+        load(reformat_incoming_param_data(
           EC2.connection.describe_instances(:instance_id => [ self.instance_id ])["reservationSet"]["item"].
             first["instancesSet"]["item"].
             first # Good lord.
@@ -156,7 +175,7 @@ module Awsymandias
             []
           else
             reservation_set["item"].first["instancesSet"]["item"].map do |item|
-              instantiate_record(unrename_keys(item))
+              instantiate_record(reformat_incoming_param_data(item))
             end
           end
         end
@@ -167,7 +186,7 @@ module Awsymandias
             raise ActiveResource::ResourceNotFound, "not found: #{id}"
           else
             reservation_set["item"].first["instancesSet"]["item"].map do |item|
-              instantiate_record(unrename_keys(item))
+              instantiate_record(reformat_incoming_param_data(item))
             end.first
           end
         end
@@ -332,5 +351,5 @@ module Awsymandias
           returning(domain) { connection.create_domain(domain) unless domain_exists?(domain) }
         end
     end
-  end
+  end  
 end
