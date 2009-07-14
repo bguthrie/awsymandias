@@ -4,6 +4,23 @@
 
 Awsymandias is a library that helps you set up and tear down complicated AWS environments. In addition to offering a clean, fluent domain model for working with instances and groups of instances it allows you to persist role-to-instance-id mappings to SimpleDB, allowing you to manage your stack from multiple different machines. Eventually it will allow you to add arbitrary instance metadata and help you track instance running costs over time.
 
+  I met a hacker from an antique land
+  Who said: Two tall and heavy mounts of steel
+  Lie in a basement. Near them on a stand,
+  Recessed, a dark CRT lies, whose peel’d
+  Cracked shell of dullest beige, and blinkenlights,
+  Tell that its fact’ry well those old specs read
+  Which yet survive, inked on the lifeless thing,
+  The die that stamp’d them and the power that fed.
+  And on the burned-in screen these words appear:
+  “My name is Awsymandias, king of kings:
+  Look on my racks, ye Mighty, and despair!”
+  No bits at all remain. Not far away
+  A data center waits, its humming air
+  Host to a boundless cloud by th’hour to pay.
+  
+(Apologies to Shelley’s original sonnet. Die-hards will please note that it scans and attempts to follow the original meter and rhyme scheme wherever possible.)
+
 == Example
 
   # Give the stack a name, and describe its members.
@@ -25,6 +42,10 @@ Awsymandias is a library that helps you set up and tear down complicated AWS env
   end
 
 This should allow you to re-launch and deploy that AWS stack from any one of several different workstations.
+
+== Contributors
+
+* Paul Gross (pgross@gmail.com)
 
 == License
 
