@@ -107,12 +107,7 @@ module Awsymandias
       end
       
       def port_open?(port)
-        begin
-          Net::Telnet.new("Host" => public_dns, "Port" => port)
-          true
-        rescue Exception => e
-          false
-        end
+        Net::Telnet.new("Host" => public_dns, "Port" => port) && true rescue false
       end
       
       def terminated?
