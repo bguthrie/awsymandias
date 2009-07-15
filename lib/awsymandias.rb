@@ -326,7 +326,8 @@ module Awsymandias
       def connection(opts={})
         @connection ||= ::AwsSdb::Service.new({
           :access_key_id     => Awsymandias.access_key_id     || ENV['AMAZON_ACCESS_KEY_ID'],
-          :secret_access_key => Awsymandias.secret_access_key || ENV['AMAZON_SECRET_ACCESS_KEY']
+          :secret_access_key => Awsymandias.secret_access_key || ENV['AMAZON_SECRET_ACCESS_KEY'],
+          :logger            => Logger.new("/dev/null")
         }.merge(opts))
       end
       
