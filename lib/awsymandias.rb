@@ -5,6 +5,7 @@ require 'aws_sdb'
 require 'money'
 require 'activesupport'
 require 'activeresource'
+require 'net/telnet'
 
 module Awsymandias
   class << self
@@ -112,7 +113,16 @@ module Awsymandias
       def running?
         instance_state.name == "running"
       end
-    
+      
+      def port_open?(port)
+        begin
+          Net::Telnet.new("Host" => public_dns, "Port" => port)
+          true
+        rescue Exception => e
+          false
+        end
+      end
+      
       def terminated?
         instance_state.name == "terminated"
       end
@@ -282,6 +292,10 @@ module Awsymandias
           
       def running?
         launched? && @instances.values.all?(&:running?)
+      end
+      
+      def port_open?(port)
+        @instances.values.all? { |instance| instance.port_open?(port) }
       end
       
       def running_cost

@@ -487,6 +487,24 @@ describe Awsymandias do
           instance.running_cost.should == expected_cost          
         end
       end
+      
+      describe "port_open?" do
+        it "should return true if telnet does not raise" do
+          stub_connection_with DESCRIBE_INSTANCES_SINGLE_RESULT_RUNNING_XML
+          instance = Awsymandias::EC2::Instance.find("i-some-instance")
+          Net::Telnet.should_receive(:new).with("Host" => "ec2-174-129-118-52.compute-1.amazonaws.com",
+                                                "Port" => 100).and_return(true)
+          instance.port_open?(100).should be_true
+        end
+        
+        it "should return false if telnet does raise" do
+          stub_connection_with DESCRIBE_INSTANCES_SINGLE_RESULT_RUNNING_XML
+          instance = Awsymandias::EC2::Instance.find("i-some-instance")
+          Net::Telnet.should_receive(:new).with("Host" => "ec2-174-129-118-52.compute-1.amazonaws.com",
+                                                "Port" => 100).and_raise(Timeout::Error)
+          instance.port_open?(100).should be_false
+        end
+      end
     end
 
     describe ApplicationStack = Awsymandias::EC2::ApplicationStack do
@@ -703,6 +721,65 @@ describe Awsymandias do
           s.launch
           s.should be_running
         end
+      end
+      
+      describe "port_open?" do
+        it "should return true if there is one instance with the port open" do
+          s = ApplicationStack.new("test") do |s| 
+            s.role "app1", :instance_type => Awsymandias::EC2::InstanceTypes::C1_XLARGE
+          end
+  
+          instance = stub_instance
+          instance.should_receive(:port_open?).with(100).and_return(true)
+          Instance.stub!(:launch).and_return(instance)
+        
+          s.launch
+          s.port_open?(100).should be_true
+        end
+      
+        it "should return false if there is one instance with the port closed" do
+          s = ApplicationStack.new("test") do |s| 
+            s.role "app1", :instance_type => Awsymandias::EC2::InstanceTypes::C1_XLARGE
+          end
+  
+          instance = stub_instance
+          instance.should_receive(:port_open?).with(100).and_return(false)
+          Instance.stub!(:launch).and_return(instance)
+        
+          s.launch
+          s.port_open?(100).should be_false
+        end
+        
+        it "should return true if there are multiple instances all with the port open" do
+          s = ApplicationStack.new("test") do |s| 
+            s.role "app1", :instance_type => Awsymandias::EC2::InstanceTypes::C1_XLARGE
+            s.role "app2", :instance_type => Awsymandias::EC2::InstanceTypes::C1_XLARGE
+          end
+  
+          instance1, instance2 = [stub_instance, stub_instance]
+          instance1.should_receive(:port_open?).with(100).and_return(true)
+          instance2.should_receive(:port_open?).with(100).and_return(true)
+          Instance.stub!(:launch).and_return(instance1, instance2)
+        
+          s.launch
+          s.port_open?(100).should be_true
+        end
+
+        it "should return false if there are multiple instances with at least one port closed" do
+          s = ApplicationStack.new("test") do |s| 
+            s.role "app1", :instance_type => Awsymandias::EC2::InstanceTypes::C1_XLARGE
+            s.role "app2", :instance_type => Awsymandias::EC2::InstanceTypes::C1_XLARGE
+          end
+  
+          instance1, instance2 = [stub_instance, stub_instance]
+          instance1.should_receive(:port_open?).with(100).and_return(true)
+          instance2.should_receive(:port_open?).with(100).and_return(false)
+          Instance.stub!(:launch).and_return(instance1, instance2)
+        
+          s.launch
+          s.port_open?(100).should be_false
+        end
+
       end
 
       describe "terminate!" do
