@@ -98,14 +98,6 @@ module Awsymandias
       def public_dns;  dns_name;         end
       def private_dns; private_dns_name; end
 
-      def public_ip
-        dns_to_ip(public_dns)
-      end
-
-      def private_ip
-        dns_to_ip(private_dns)
-      end
-    
       def pending?
         instance_state.name == "pending"
       end
@@ -212,13 +204,6 @@ module Awsymandias
           instance_id = response["instancesSet"]["item"].map {|h| h["instanceId"]}.first
           find(instance_id)
         end
-      end
-
-      private
-
-      def dns_to_ip(dns)
-        match = dns.match(/(ec2|ip)-(\d+)-(\d+)-(\d+)-(\d+)/)
-        match.captures[1..-1].join(".")
       end
     end
       
