@@ -1,0 +1,368 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.7	//
+ApplicationStack	lib/awsymandias/ec2/application_stack.rb	/^    class ApplicationStack$/;"	c	class:Awsymandias.EC2
+AvailabilityZones	lib/awsymandias.rb	/^    module AvailabilityZones$/;"	m
+AwsSdb	vendor/aws-sdb/lib/aws_sdb/error.rb	/^module AwsSdb$/;"	m
+AwsSdb	vendor/aws-sdb/lib/aws_sdb/service.rb	/^module AwsSdb$/;"	m
+Awsymandias	lib/awsymandias.rb	/^module Awsymandias$/;"	m
+Awsymandias	lib/awsymandias/ec2/application_stack.rb	/^module Awsymandias$/;"	m
+Awsymandias	lib/awsymandias/ec2/instance.rb	/^module Awsymandias$/;"	m
+Awsymandias	lib/awsymandias/simple_db.rb	/^module Awsymandias$/;"	m
+Awsymandias	lib/awsymandias/support/hash.rb	/^module Awsymandias$/;"	m
+ConnectionError	vendor/aws-sdb/lib/aws_sdb/error.rb	/^  class ConnectionError < Error$/;"	c	class:AwsSdb
+EC2	lib/awsymandias.rb	/^  module EC2$/;"	m
+EC2	lib/awsymandias/ec2/application_stack.rb	/^  module EC2$/;"	m	class:Awsymandias
+EC2	lib/awsymandias/ec2/instance.rb	/^  module EC2$/;"	m	class:Awsymandias
+Error	vendor/aws-sdb/lib/aws_sdb/error.rb	/^  class Error < RuntimeError ; end$/;"	c	class:AwsSdb
+FeatureDeprecatedError	vendor/aws-sdb/lib/aws_sdb/error.rb	/^  class FeatureDeprecatedError < RequestError ; end$/;"	c	class:AwsSdb
+Hash	lib/awsymandias/support/hash.rb	/^    module Hash$/;"	m	class:Awsymandias.Support
+Instance	lib/awsymandias/ec2/instance.rb	/^    class Instance < ActiveResource::Base$/;"	c	class:Awsymandias.EC2
+InstanceTypes	lib/awsymandias.rb	/^    module InstanceTypes$/;"	m
+InvalidDomainNameError	vendor/aws-sdb/lib/aws_sdb/error.rb	/^  class InvalidDomainNameError < RequestError ; end$/;"	c	class:AwsSdb
+InvalidNextTokenError	vendor/aws-sdb/lib/aws_sdb/error.rb	/^  class InvalidNextTokenError < RequestError ; end$/;"	c	class:AwsSdb
+InvalidNumberPredicatesError	vendor/aws-sdb/lib/aws_sdb/error.rb	/^  class InvalidNumberPredicatesError < RequestError ; end$/;"	c	class:AwsSdb
+InvalidNumberValueTestsError	vendor/aws-sdb/lib/aws_sdb/error.rb	/^  class InvalidNumberValueTestsError < RequestError ; end$/;"	c	class:AwsSdb
+InvalidParameterValueError	vendor/aws-sdb/lib/aws_sdb/error.rb	/^  class InvalidParameterValueError < RequestError ; end$/;"	c	class:AwsSdb
+InvalidQueryExpressionError	vendor/aws-sdb/lib/aws_sdb/error.rb	/^  class InvalidQueryExpressionError < RequestError ; end$/;"	c	class:AwsSdb
+MissingParameterError	vendor/aws-sdb/lib/aws_sdb/error.rb	/^  class MissingParameterError < RequestError ; end$/;"	c	class:AwsSdb
+NoSuchDomainError	vendor/aws-sdb/lib/aws_sdb/error.rb	/^  class NoSuchDomainError < RequestError ; end$/;"	c	class:AwsSdb
+NumberDomainAttributesExceededError	vendor/aws-sdb/lib/aws_sdb/error.rb	/^  class NumberDomainAttributesExceededError < RequestError ; end$/;"	c	class:AwsSdb
+NumberDomainBytesExceededError	vendor/aws-sdb/lib/aws_sdb/error.rb	/^  class NumberDomainBytesExceededError < RequestError ; end$/;"	c	class:AwsSdb
+NumberDomainsExceededError	vendor/aws-sdb/lib/aws_sdb/error.rb	/^  class NumberDomainsExceededError < RequestError ; end$/;"	c	class:AwsSdb
+NumberItemAttributesExceededError	vendor/aws-sdb/lib/aws_sdb/error.rb	/^  class NumberItemAttributesExceededError < RequestError ; end$/;"	c	class:AwsSdb
+RequestError	vendor/aws-sdb/lib/aws_sdb/error.rb	/^  class RequestError < Error$/;"	c	class:AwsSdb
+RequestTimeoutError	vendor/aws-sdb/lib/aws_sdb/error.rb	/^  class RequestTimeoutError < RequestError ; end$/;"	c	class:AwsSdb
+Service	vendor/aws-sdb/lib/aws_sdb/service.rb	/^  class Service$/;"	c	class:AwsSdb
+SimpleDB	lib/awsymandias/simple_db.rb	/^  module SimpleDB # :nodoc$/;"	m	class:Awsymandias
+SimpleDBStub	spec/awsymandias_spec.rb	/^      class SimpleDBStub$/;"	c
+SimpleDBStub	spec/ec2/application_stack_spec.rb	/^  class SimpleDBStub$/;"	c
+Support	lib/awsymandias/support/hash.rb	/^  module Support$/;"	m	class:Awsymandias
+access_key_id	lib/awsymandias.rb	/^    def access_key_id$/;"	f	class:Awsymandias
+application_stack.rb	lib/awsymandias/ec2/application_stack.rb	1;"	F
+application_stack_spec.rb	spec/ec2/application_stack_spec.rb	1;"	F
+aws_sdb.rb	vendor/aws-sdb/lib/aws_sdb.rb	1;"	F
+awsymandias.rb	lib/awsymandias.rb	1;"	F
+awsymandias_spec.rb	spec/awsymandias_spec.rb	1;"	F
+call	vendor/aws-sdb/lib/aws_sdb/service.rb	/^    def call(method, params)$/;"	f
+connection	lib/awsymandias.rb	/^      def connection$/;"	f	class:EC2
+connection	lib/awsymandias/simple_db.rb	/^      def connection(opts={})$/;"	f	class:Awsymandias.SimpleDB
+create_domain	spec/awsymandias_spec.rb	/^        def create_domain(domain)$/;"	f	class:SimpleDBStub
+create_domain	spec/ec2/application_stack_spec.rb	/^    def create_domain(domain)$/;"	f	class:SimpleDBStub
+create_domain	vendor/aws-sdb/lib/aws_sdb/service.rb	/^    def create_domain(domain)$/;"	f	class:AwsSdb.Service
+delete	lib/awsymandias/simple_db.rb	/^      def delete(domain, name)$/;"	f	class:Awsymandias.SimpleDB
+delete_attributes	spec/awsymandias_spec.rb	/^        def delete_attributes(domain, name)$/;"	f	class:SimpleDBStub
+delete_attributes	spec/ec2/application_stack_spec.rb	/^    def delete_attributes(domain, name)$/;"	f	class:SimpleDBStub
+delete_attributes	vendor/aws-sdb/lib/aws_sdb/service.rb	/^    def delete_attributes(domain, item)$/;"	f
+delete_domain	vendor/aws-sdb/lib/aws_sdb/service.rb	/^    def delete_domain(domain)$/;"	f	class:AwsSdb.Service
+domain_exists?	lib/awsymandias/simple_db.rb	/^      def domain_exists?(domain)$/;"	f	class:Awsymandias.SimpleDB
+error.rb	vendor/aws-sdb/lib/aws_sdb/error.rb	1;"	F
+find	lib/awsymandias/ec2/application_stack.rb	/^        def find(name)$/;"	f	class:Awsymandias.EC2.ApplicationStack
+find	lib/awsymandias/ec2/instance.rb	/^        def find(*args)$/;"	f	class:Awsymandias.EC2.Instance
+find_all	lib/awsymandias/ec2/instance.rb	/^        def find_all(ids, opts={})$/;"	f	class:Awsymandias.EC2.Instance
+find_one	lib/awsymandias/ec2/instance.rb	/^        def find_one(id, opts={})$/;"	f	class:Awsymandias
+get	lib/awsymandias/simple_db.rb	/^      def get(domain, name)$/;"	f	class:Awsymandias.SimpleDB
+get_attributes	spec/awsymandias_spec.rb	/^        def get_attributes(domain, name)$/;"	f	class:SimpleDBStub
+get_attributes	spec/ec2/application_stack_spec.rb	/^    def get_attributes(domain, name)$/;"	f	class:SimpleDBStub
+get_attributes	vendor/aws-sdb/lib/aws_sdb/service.rb	/^    def get_attributes(domain, item)$/;"	f
+handle_domain	lib/awsymandias/simple_db.rb	/^      def handle_domain(domain)$/;"	f	class:Awsymandias.SimpleDB
+hash.rb	lib/awsymandias/support/hash.rb	1;"	F
+id	lib/awsymandias/ec2/instance.rb	/^      def id;          instance_id;      end$/;"	f	class:Awsymandias.EC2.Instance
+index.html	coverage/index.html	1;"	F
+initialize	lib/awsymandias/ec2/application_stack.rb	/^      def initialize(name, opts={})$/;"	f	class:Awsymandias.EC2
+initialize	spec/awsymandias_spec.rb	/^        def initialize$/;"	f	class:SimpleDBStub
+initialize	spec/ec2/application_stack_spec.rb	/^    def initialize$/;"	f	class:SimpleDBStub
+initialize	vendor/aws-sdb/lib/aws_sdb/error.rb	/^    def initialize(message, request_id=nil)$/;"	f	class:AwsSdb.RequestError
+initialize	vendor/aws-sdb/lib/aws_sdb/error.rb	/^    def initialize(response)$/;"	f	class:AwsSdb.ConnectionError
+initialize	vendor/aws-sdb/lib/aws_sdb/service.rb	/^    def initialize(options={})$/;"	f	class:AwsSdb.Service
+inspect	lib/awsymandias/ec2/application_stack.rb	/^      def inspect$/;"	f	class:Awsymandias.EC2
+instance.rb	lib/awsymandias/ec2/instance.rb	1;"	F
+instance_type	lib/awsymandias/ec2/instance.rb	/^      def instance_type$/;"	f	class:Awsymandias.EC2.Instance
+instance_types	lib/awsymandias.rb	/^      def instance_types$/;"	f	class:EC2
+launch	lib/awsymandias/ec2/application_stack.rb	/^        def launch(name, opts={})$/;"	f	class:Awsymandias.EC2.ApplicationStack
+launch	lib/awsymandias/ec2/application_stack.rb	/^      def launch$/;"	f	class:Awsymandias.EC2
+launch	lib/awsymandias/ec2/instance.rb	/^        def launch(opts={})$/;"	f	class:Awsymandias
+launch_time	lib/awsymandias/ec2/instance.rb	/^      def launch_time$/;"	f	class:Awsymandias.EC2.Instance
+launched?	lib/awsymandias/ec2/application_stack.rb	/^      def launched?$/;"	f	class:Awsymandias.EC2
+lib-awsymandias-ec2-application_stack_rb.html	coverage/lib-awsymandias-ec2-application_stack_rb.html	1;"	F
+lib-awsymandias-ec2-instance_rb.html	coverage/lib-awsymandias-ec2-instance_rb.html	1;"	F
+lib-awsymandias-simple_db_rb.html	coverage/lib-awsymandias-simple_db_rb.html	1;"	F
+lib-awsymandias-support-hash_rb.html	coverage/lib-awsymandias-support-hash_rb.html	1;"	F
+lib-awsymandias_rb.html	coverage/lib-awsymandias_rb.html	1;"	F
+line1	coverage/lib-awsymandias-ec2-application_stack_rb.html	/^    <\/tr> <\/tbody> <\/table><pre><span class="inferred0"><a name="line1"><\/a> 1 #$/;"	a
+line1	coverage/lib-awsymandias-ec2-instance_rb.html	/^    class="inferred0"><a name="line1"><\/a> 1 # An instance represents an AWS$/;"	a
+line1	coverage/lib-awsymandias-simple_db_rb.html	/^    class="inferred0"><a name="line1"><\/a> 1 # TODO Locate a nicer SimpleDB API$/;"	a
+line1	coverage/lib-awsymandias-support-hash_rb.html	/^    class="marked0"><a name="line1"><\/a> 1 module Awsymandias <\/span><span$/;"	a
+line1	coverage/lib-awsymandias_rb.html	/^    <\/tr> <\/tbody> <\/table><pre><span class="marked1"><a name="line1"><\/a> 1$/;"	a
+line10	coverage/lib-awsymandias-ec2-instance_rb.html	/^    name="line9"><\/a> 9 <\/span><span class="marked1"><a name="line10"><\/a> 10$/;"	a
+line10	coverage/lib-awsymandias-simple_db_rb.html	/^    <\/span><span class="marked1"><a name="line10"><\/a>10 }.merge(opts))$/;"	a
+line10	coverage/lib-awsymandias-support-hash_rb.html	/^    class="marked1"><a name="line10"><\/a>10 h <\/span><span class="inferred0"><a$/;"	a
+line10	coverage/lib-awsymandias_rb.html	/^    class="marked0"><a name="line10"><\/a>10 require File.dirname(__FILE__) +$/;"	a
+line100	coverage/lib-awsymandias-ec2-application_stack_rb.html	/^    @sdb_domain, @name <\/span><span class="inferred1"><a name="line100"><\/a>100$/;"	a
+line100	coverage/lib-awsymandias-ec2-instance_rb.html	/^    class="marked1"><a name="line100"><\/a>100 raise$/;"	a
+line101	coverage/lib-awsymandias-ec2-application_stack_rb.html	/^    end <\/span><span class="inferred0"><a name="line101"><\/a>101 <\/span><span$/;"	a
+line101	coverage/lib-awsymandias-ec2-instance_rb.html	/^    class="inferred0"><a name="line101"><\/a>101 else <\/span><span$/;"	a
+line102	coverage/lib-awsymandias-ec2-application_stack_rb.html	/^    class="marked1"><a name="line102"><\/a>102 def$/;"	a
+line102	coverage/lib-awsymandias-ec2-instance_rb.html	/^    class="marked1"><a name="line102"><\/a>102$/;"	a
+line103	coverage/lib-awsymandias-ec2-instance_rb.html	/^    reservation_set[&quot;item&quot;].first[&quot;instancesSet&quot;][&quot;item&quot;].map do |item| <\/span><span class="marked0"><a name="line103"><\/a>103 instantiate_record(reformat_incoming_param_data(item)) <\/span><span class="uncovered1"><a name="line104"><\/a>104 end.first <\/span><span class="uncovered0"><a name="line105"><\/a>105 end <\/span><span class="uncovered1"><a name="line106"><\/a>106 end <\/span><span class="inferred0"><a name="line107"><\/a>107 <\/span><span class="marked1"><a name="line108"><\/a>108 def launch(opts={}) <\/span><span class="marked0"><a name="line109"><\/a>109 opts.assert_valid_keys! :image_id, :key_name, :instance_type, :availability_zone, :user_data <\/span><span class="inferred1"><a name="line110"><\/a>110 <\/span><span class="marked0"><a name="line111"><\/a>111 opts[:instance_type] = opts[:instance_type].name if opts[:instance_type].is_a?(Awsymandias::EC2::InstanceType) <\/span><span class="inferred1"><a name="line112"><\/a>112 <\/span><span class="marked0"><a name="line113"><\/a>113 response = Awsymandias::EC2.connection.run_instances opts <\/span><span class="marked1"><a name="line114"><\/a>114 instance_id = response[&quot;instancesSet&quot;][&quot;item&quot;].map {|h| h[&quot;instanceId&quot;]}.first <\/span><span class="marked0"><a name="line115"><\/a>115 find(instance_id) <\/span><span class="inferred1"><a name="line116"><\/a>116 end <\/span><span class="inferred0"><a name="line117"><\/a>117 end <\/span><span class="inferred1"><a name="line118"><\/a>118 end <\/span><span class="inferred0"><a name="line119"><\/a>119 end <\/span><span class="inferred1"><a name="line120"><\/a>120 end <\/span><\/pre>$/;"	a
+line104	coverage/lib-awsymandias-ec2-application_stack_rb.html	/^    @name)) do |mapping| <\/span><span class="marked1"><a name="line104"><\/a>104$/;"	a
+line105	coverage/lib-awsymandias-ec2-application_stack_rb.html	/^    unless mapping.empty? <\/span><span class="marked0"><a name="line105"><\/a>105$/;"	a
+line106	coverage/lib-awsymandias-ec2-application_stack_rb.html	/^    class="marked1"><a name="line106"><\/a>106 mapping.each do |role_name,$/;"	a
+line107	coverage/lib-awsymandias-ec2-application_stack_rb.html	/^    instance_id| <\/span><span class="marked0"><a name="line107"><\/a>107$/;"	a
+line108	coverage/lib-awsymandias-ec2-application_stack_rb.html	/^    class="inferred1"><a name="line108"><\/a>108 end <\/span><span$/;"	a
+line109	coverage/lib-awsymandias-ec2-application_stack_rb.html	/^    class="inferred0"><a name="line109"><\/a>109 end <\/span><span$/;"	a
+line11	coverage/lib-awsymandias-simple_db_rb.html	/^    <\/span><span class="inferred0"><a name="line11"><\/a>11 end <\/span><span$/;"	a
+line110	coverage/lib-awsymandias-ec2-application_stack_rb.html	/^    class="inferred1"><a name="line110"><\/a>110 end <\/span><span$/;"	a
+line111	coverage/lib-awsymandias-ec2-application_stack_rb.html	/^    class="inferred0"><a name="line111"><\/a>111 end <\/span><span$/;"	a
+line112	coverage/lib-awsymandias-ec2-application_stack_rb.html	/^    class="inferred1"><a name="line112"><\/a>112 <\/span><span$/;"	a
+line113	coverage/lib-awsymandias-ec2-application_stack_rb.html	/^    class="inferred0"><a name="line113"><\/a>113 end <\/span><span$/;"	a
+line114	coverage/lib-awsymandias-ec2-application_stack_rb.html	/^    class="inferred1"><a name="line114"><\/a>114 <\/span><span$/;"	a
+line115	coverage/lib-awsymandias-ec2-application_stack_rb.html	/^    class="inferred0"><a name="line115"><\/a>115 end <\/span><span$/;"	a
+line116	coverage/lib-awsymandias-ec2-application_stack_rb.html	/^    class="inferred1"><a name="line116"><\/a>116 end <\/span><\/pre>$/;"	a
+line12	coverage/lib-awsymandias-ec2-application_stack_rb.html	/^    class="inferred1"><a name="line12"><\/a> 12 <\/span><span class="marked0"><a$/;"	a
+line12	coverage/lib-awsymandias-ec2-instance_rb.html	/^    name="line11"><\/a> 11 <\/span><span class="marked1"><a name="line12"><\/a> 12$/;"	a
+line12	coverage/lib-awsymandias-simple_db_rb.html	/^    class="inferred1"><a name="line12"><\/a>12 <\/span><span class="marked0"><a$/;"	a
+line13	coverage/lib-awsymandias-ec2-instance_rb.html	/^    def id; instance_id; end <\/span><span class="marked0"><a name="line13"><\/a>$/;"	a
+line13	coverage/lib-awsymandias-support-hash_rb.html	/^    class="uncovered0"><a name="line13"><\/a>13 params.map { |v|$/;"	a
+line14	coverage/lib-awsymandias-ec2-application_stack_rb.html	/^    <\/span><span class="inferred1"><a name="line14"><\/a> 14 <\/span><span$/;"	a
+line14	coverage/lib-awsymandias-simple_db_rb.html	/^    class="marked1"><a name="line14"><\/a>14 connection.put_attributes$/;"	a
+line15	coverage/lib-awsymandias-ec2-application_stack_rb.html	/^    class="marked0"><a name="line15"><\/a> 15 class &lt;&lt; self <\/span><span$/;"	a
+line15	coverage/lib-awsymandias-ec2-instance_rb.html	/^    class="inferred0"><a name="line15"><\/a> 15 <\/span><span class="marked1"><a$/;"	a
+line15	coverage/lib-awsymandias_rb.html	/^    name="line14"><\/a>14 <\/span><span class="marked1"><a name="line15"><\/a>15$/;"	a
+line16	coverage/lib-awsymandias-ec2-application_stack_rb.html	/^    class="marked1"><a name="line16"><\/a> 16 def find(name) <\/span><span$/;"	a
+line16	coverage/lib-awsymandias_rb.html	/^    module Awsymandias <\/span><span class="marked0"><a name="line16"><\/a>16$/;"	a
+line17	coverage/lib-awsymandias-ec2-application_stack_rb.html	/^    class="uncovered0"><a name="line17"><\/a> 17 returning(new(name)) do |stack|$/;"	a
+line17	coverage/lib-awsymandias-simple_db_rb.html	/^    name="line16"><\/a>16 <\/span><span class="marked0"><a name="line17"><\/a>17$/;"	a
+line17	coverage/lib-awsymandias_rb.html	/^    class &lt;&lt; self <\/span><span class="marked1"><a name="line17"><\/a>17$/;"	a
+line18	coverage/lib-awsymandias-ec2-application_stack_rb.html	/^    <\/span><span class="uncovered1"><a name="line18"><\/a> 18 return nil unless$/;"	a
+line18	coverage/lib-awsymandias-ec2-instance_rb.html	/^    <\/span><span class="inferred1"><a name="line18"><\/a> 18 end <\/span><span$/;"	a
+line18	coverage/lib-awsymandias-simple_db_rb.html	/^    def get(domain, name) <\/span><span class="marked1"><a name="line18"><\/a>18$/;"	a
+line18	coverage/lib-awsymandias_rb.html	/^    class="inferred0"><a name="line18"><\/a>18 <\/span><span class="marked1"><a$/;"	a
+line19	coverage/lib-awsymandias-ec2-application_stack_rb.html	/^    stack.launched? <\/span><span class="uncovered0"><a name="line19"><\/a> 19 end$/;"	a
+line19	coverage/lib-awsymandias-ec2-instance_rb.html	/^    class="inferred0"><a name="line19"><\/a> 19 <\/span><span class="marked1"><a$/;"	a
+line19	coverage/lib-awsymandias-simple_db_rb.html	/^    class="inferred0"><a name="line19"><\/a>19 end <\/span><span$/;"	a
+line2	coverage/lib-awsymandias-ec2-application_stack_rb.html	/^    Goal: <\/span><span class="inferred1"><a name="line2"><\/a> 2 # stack =$/;"	a
+line2	coverage/lib-awsymandias-ec2-instance_rb.html	/^    <\/span><span class="inferred1"><a name="line2"><\/a> 2 # It wraps the simple$/;"	a
+line2	coverage/lib-awsymandias-simple_db_rb.html	/^    class="marked1"><a name="line2"><\/a> 2 module Awsymandias <\/span><span$/;"	a
+line2	coverage/lib-awsymandias-support-hash_rb.html	/^    class="marked1"><a name="line2"><\/a> 2 module Support <\/span><span$/;"	a
+line2	coverage/lib-awsymandias_rb.html	/^    &lt;&lt; dir } <\/span><span class="inferred0"><a name="line2"><\/a> 2$/;"	a
+line20	coverage/lib-awsymandias-ec2-application_stack_rb.html	/^    <\/span><span class="uncovered1"><a name="line20"><\/a> 20 end <\/span><span$/;"	a
+line20	coverage/lib-awsymandias-simple_db_rb.html	/^    class="inferred1"><a name="line20"><\/a>20 <\/span><span class="marked0"><a$/;"	a
+line21	coverage/lib-awsymandias-ec2-application_stack_rb.html	/^    class="inferred0"><a name="line21"><\/a> 21 <\/span><span class="marked1"><a$/;"	a
+line22	coverage/lib-awsymandias-ec2-instance_rb.html	/^    <\/span><span class="inferred1"><a name="line22"><\/a> 22 end <\/span><span$/;"	a
+line22	coverage/lib-awsymandias-simple_db_rb.html	/^    class="marked1"><a name="line22"><\/a>22 connection.delete_attributes$/;"	a
+line23	coverage/lib-awsymandias-ec2-application_stack_rb.html	/^    class="uncovered0"><a name="line23"><\/a> 23 returning(new(name, opts)) do$/;"	a
+line23	coverage/lib-awsymandias-ec2-instance_rb.html	/^    class="inferred0"><a name="line23"><\/a> 23 <\/span><span class="marked1"><a$/;"	a
+line23	coverage/lib-awsymandias_rb.html	/^    name="line22"><\/a>22 <\/span><span class="marked1"><a name="line23"><\/a>23$/;"	a
+line24	coverage/lib-awsymandias-ec2-application_stack_rb.html	/^    |stack| <\/span><span class="uncovered1"><a name="line24"><\/a> 24$/;"	a
+line24	coverage/lib-awsymandias_rb.html	/^    def secret_access_key <\/span><span class="marked0"><a name="line24"><\/a>24$/;"	a
+line25	coverage/lib-awsymandias-ec2-application_stack_rb.html	/^    stack.launch <\/span><span class="uncovered0"><a name="line25"><\/a> 25 end$/;"	a
+line25	coverage/lib-awsymandias-simple_db_rb.html	/^    name="line24"><\/a>24 <\/span><span class="marked0"><a name="line25"><\/a>25$/;"	a
+line26	coverage/lib-awsymandias-ec2-application_stack_rb.html	/^    <\/span><span class="uncovered1"><a name="line26"><\/a> 26 end <\/span><span$/;"	a
+line26	coverage/lib-awsymandias-ec2-instance_rb.html	/^    class="inferred1"><a name="line26"><\/a> 26 end <\/span><span$/;"	a
+line26	coverage/lib-awsymandias-simple_db_rb.html	/^    private <\/span><span class="inferred1"><a name="line26"><\/a>26 <\/span><span$/;"	a
+line27	coverage/lib-awsymandias-ec2-application_stack_rb.html	/^    class="uncovered0"><a name="line27"><\/a> 27 end <\/span><span$/;"	a
+line27	coverage/lib-awsymandias-ec2-instance_rb.html	/^    class="inferred0"><a name="line27"><\/a> 27 <\/span><span class="marked1"><a$/;"	a
+line27	coverage/lib-awsymandias-simple_db_rb.html	/^    class="marked0"><a name="line27"><\/a>27 def domain_exists?(domain)$/;"	a
+line28	coverage/lib-awsymandias-ec2-application_stack_rb.html	/^    class="inferred1"><a name="line28"><\/a> 28 <\/span><span class="marked0"><a$/;"	a
+line28	coverage/lib-awsymandias-simple_db_rb.html	/^    <\/span><span class="marked1"><a name="line28"><\/a>28$/;"	a
+line28	coverage/lib-awsymandias_rb.html	/^    name="line27"><\/a>27 <\/span><span class="marked0"><a name="line28"><\/a>28$/;"	a
+line29	coverage/lib-awsymandias-simple_db_rb.html	/^    <\/span><span class="inferred0"><a name="line29"><\/a>29 end <\/span><span$/;"	a
+line29	coverage/lib-awsymandias_rb.html	/^    module EC2 <\/span><span class="marked1"><a name="line29"><\/a>29 class$/;"	a
+line3	coverage/lib-awsymandias-ec2-instance_rb.html	/^    class="inferred0"><a name="line3"><\/a> 3 # It inherits from ARes::B in order$/;"	a
+line3	coverage/lib-awsymandias-simple_db_rb.html	/^    class="marked0"><a name="line3"><\/a> 3 module SimpleDB # :nodoc <\/span><span$/;"	a
+line3	coverage/lib-awsymandias-support-hash_rb.html	/^    class="marked0"><a name="line3"><\/a> 3 module Hash <\/span><span$/;"	a
+line3	coverage/lib-awsymandias_rb.html	/^    <\/span><span class="marked1"><a name="line3"><\/a> 3 require 'EC2'$/;"	a
+line30	coverage/lib-awsymandias-ec2-application_stack_rb.html	/^    class="marked1"><a name="line30"><\/a> 30 opts.assert_valid_keys! :roles$/;"	a
+line30	coverage/lib-awsymandias-ec2-instance_rb.html	/^    <\/span><span class="inferred1"><a name="line30"><\/a> 30 end <\/span><span$/;"	a
+line30	coverage/lib-awsymandias-simple_db_rb.html	/^    class="inferred1"><a name="line30"><\/a>30 <\/span><span class="marked0"><a$/;"	a
+line30	coverage/lib-awsymandias_rb.html	/^    &lt;&lt; self <\/span><span class="inferred0"><a name="line30"><\/a>30 #$/;"	a
+line31	coverage/lib-awsymandias-ec2-application_stack_rb.html	/^    <\/span><span class="inferred0"><a name="line31"><\/a> 31 <\/span><span$/;"	a
+line31	coverage/lib-awsymandias-ec2-instance_rb.html	/^    class="inferred0"><a name="line31"><\/a> 31 <\/span><span class="marked1"><a$/;"	a
+line32	coverage/lib-awsymandias-ec2-application_stack_rb.html	/^    class="marked1"><a name="line32"><\/a> 32 @name = name <\/span><span$/;"	a
+line32	coverage/lib-awsymandias-simple_db_rb.html	/^    class="marked1"><a name="line32"><\/a>32 returning(domain) {$/;"	a
+line33	coverage/lib-awsymandias-ec2-application_stack_rb.html	/^    class="marked0"><a name="line33"><\/a> 33 @roles = opts[:roles] || {}$/;"	a
+line33	coverage/lib-awsymandias-simple_db_rb.html	/^    <\/span><span class="inferred0"><a name="line33"><\/a>33 end <\/span><span$/;"	a
+line34	coverage/lib-awsymandias-ec2-application_stack_rb.html	/^    <\/span><span class="marked1"><a name="line34"><\/a> 34 @sdb_domain =$/;"	a
+line34	coverage/lib-awsymandias-simple_db_rb.html	/^    class="inferred1"><a name="line34"><\/a>34 end <\/span><span$/;"	a
+line34	coverage/lib-awsymandias_rb.html	/^    class="marked0"><a name="line34"><\/a>34 :access_key_id =&gt;$/;"	a
+line35	coverage/lib-awsymandias-simple_db_rb.html	/^    class="inferred0"><a name="line35"><\/a>35 end <\/span><span$/;"	a
+line35	coverage/lib-awsymandias_rb.html	/^    class="marked1"><a name="line35"><\/a>35 :secret_access_key =&gt;$/;"	a
+line36	coverage/lib-awsymandias-simple_db_rb.html	/^    class="inferred1"><a name="line36"><\/a>36 end <\/span><\/pre>$/;"	a
+line36	coverage/lib-awsymandias_rb.html	/^    <\/span><span class="marked0"><a name="line36"><\/a>36 ) <\/span><span$/;"	a
+line37	coverage/lib-awsymandias-ec2-application_stack_rb.html	/^    class="inferred0"><a name="line37"><\/a> 37 end <\/span><span$/;"	a
+line37	coverage/lib-awsymandias-ec2-instance_rb.html	/^    name="line36"><\/a> 36 <\/span><span class="marked0"><a name="line37"><\/a> 37$/;"	a
+line37	coverage/lib-awsymandias_rb.html	/^    class="inferred1"><a name="line37"><\/a>37 end <\/span><span$/;"	a
+line38	coverage/lib-awsymandias-ec2-application_stack_rb.html	/^    class="inferred1"><a name="line38"><\/a> 38 <\/span><span class="marked0"><a$/;"	a
+line38	coverage/lib-awsymandias-ec2-instance_rb.html	/^    def reload <\/span><span class="inferred1"><a name="line38"><\/a> 38$/;"	a
+line38	coverage/lib-awsymandias_rb.html	/^    class="inferred0"><a name="line38"><\/a>38 <\/span><span class="marked1"><a$/;"	a
+line4	coverage/lib-awsymandias-ec2-application_stack_rb.html	/^    <\/span><span class="inferred1"><a name="line4"><\/a> 4 # stack.role$/;"	a
+line4	coverage/lib-awsymandias-ec2-instance_rb.html	/^    class="marked1"><a name="line4"><\/a> 4 module Awsymandias <\/span><span$/;"	a
+line4	coverage/lib-awsymandias-simple_db_rb.html	/^    class="marked1"><a name="line4"><\/a> 4 class &lt;&lt; self <\/span><span$/;"	a
+line4	coverage/lib-awsymandias-support-hash_rb.html	/^    class="inferred1"><a name="line4"><\/a> 4 # Ganked from ActiveResource 2.3.2.$/;"	a
+line4	coverage/lib-awsymandias_rb.html	/^    <\/span><span class="marked0"><a name="line4"><\/a> 4 require 'aws_sdb'$/;"	a
+line40	coverage/lib-awsymandias-ec2-instance_rb.html	/^    <\/span><span class="inferred1"><a name="line40"><\/a> 40$/;"	a
+line41	coverage/lib-awsymandias-ec2-application_stack_rb.html	/^    class="marked0"><a name="line41"><\/a> 41 names.each do |name| <\/span><span$/;"	a
+line41	coverage/lib-awsymandias-ec2-instance_rb.html	/^    class="marked0"><a name="line41"><\/a> 41 first # Good lord. <\/span><span$/;"	a
+line41	coverage/lib-awsymandias_rb.html	/^    name="line40"><\/a>40 [ <\/span><span class="marked1"><a name="line41"><\/a>41$/;"	a
+line42	coverage/lib-awsymandias-ec2-application_stack_rb.html	/^    class="marked1"><a name="line42"><\/a> 42 @roles[name] = opts <\/span><span$/;"	a
+line42	coverage/lib-awsymandias-ec2-instance_rb.html	/^    class="marked1"><a name="line42"><\/a> 42 )) <\/span><span$/;"	a
+line43	coverage/lib-awsymandias-ec2-application_stack_rb.html	/^    class="marked0"><a name="line43"><\/a> 43 self.metaclass.send(:define_method,$/;"	a
+line43	coverage/lib-awsymandias-ec2-instance_rb.html	/^    class="inferred0"><a name="line43"><\/a> 43 end <\/span><span$/;"	a
+line43	coverage/lib-awsymandias_rb.html	/^    class="inferred1"><a name="line43"><\/a>43$/;"	a
+line44	coverage/lib-awsymandias-ec2-instance_rb.html	/^    class="inferred1"><a name="line44"><\/a> 44 <\/span><span class="marked0"><a$/;"	a
+line44	coverage/lib-awsymandias_rb.html	/^    class="inferred0"><a name="line44"><\/a>44$/;"	a
+line45	coverage/lib-awsymandias_rb.html	/^    class="inferred1"><a name="line45"><\/a>45$/;"	a
+line47	coverage/lib-awsymandias-ec2-application_stack_rb.html	/^    name="line46"><\/a> 46 <\/span><span class="marked0"><a name="line47"><\/a> 47$/;"	a
+line47	coverage/lib-awsymandias-ec2-instance_rb.html	/^    name="line46"><\/a> 46 { <\/span><span class="marked0"><a name="line47"><\/a>$/;"	a
+line47	coverage/lib-awsymandias_rb.html	/^    class="inferred1"><a name="line47"><\/a>47 end <\/span><span$/;"	a
+line48	coverage/lib-awsymandias-ec2-application_stack_rb.html	/^    def launch <\/span><span class="marked1"><a name="line48"><\/a> 48 @roles.each$/;"	a
+line48	coverage/lib-awsymandias_rb.html	/^    class="inferred0"><a name="line48"><\/a>48 end <\/span><span$/;"	a
+line49	coverage/lib-awsymandias-ec2-application_stack_rb.html	/^    <\/span><span class="marked0"><a name="line49"><\/a> 49 @instances[name] =$/;"	a
+line49	coverage/lib-awsymandias-ec2-instance_rb.html	/^    class="marked0"><a name="line49"><\/a> 49 :instance_type =&gt;$/;"	a
+line49	coverage/lib-awsymandias_rb.html	/^    class="inferred1"><a name="line49"><\/a>49 <\/span><span class="marked0"><a$/;"	a
+line5	coverage/lib-awsymandias-ec2-application_stack_rb.html	/^    <\/span><span class="inferred0"><a name="line5"><\/a> 5 # stack.role$/;"	a
+line5	coverage/lib-awsymandias-ec2-instance_rb.html	/^    class="marked0"><a name="line5"><\/a> 5 module EC2 <\/span><span$/;"	a
+line5	coverage/lib-awsymandias-simple_db_rb.html	/^    class="marked0"><a name="line5"><\/a> 5 def connection(opts={}) <\/span><span$/;"	a
+line5	coverage/lib-awsymandias-support-hash_rb.html	/^    <\/span><span class="marked0"><a name="line5"><\/a> 5 def$/;"	a
+line5	coverage/lib-awsymandias_rb.html	/^    <\/span><span class="marked1"><a name="line5"><\/a> 5 require 'money'$/;"	a
+line50	coverage/lib-awsymandias-ec2-instance_rb.html	/^    self.instance_type, <\/span><span class="marked1"><a name="line50"><\/a> 50$/;"	a
+line51	coverage/lib-awsymandias-ec2-application_stack_rb.html	/^    name="line50"><\/a> 50 end <\/span><span class="marked0"><a name="line51"><\/a>$/;"	a
+line51	coverage/lib-awsymandias-ec2-instance_rb.html	/^    class="marked0"><a name="line51"><\/a> 51 } <\/span><span class="inferred1"><a$/;"	a
+line51	coverage/lib-awsymandias_rb.html	/^    <\/span><span class="inferred1"><a name="line51"><\/a>51 <\/span><span$/;"	a
+line52	coverage/lib-awsymandias_rb.html	/^    class="inferred0"><a name="line52"><\/a>52 # All currently available instance$/;"	a
+line53	coverage/lib-awsymandias_rb.html	/^    types. <\/span><span class="inferred1"><a name="line53"><\/a>53 # TODO$/;"	a
+line54	coverage/lib-awsymandias-ec2-instance_rb.html	/^    name="line53"><\/a> 53 <\/span><span class="marked1"><a name="line54"><\/a> 54$/;"	a
+line54	coverage/lib-awsymandias_rb.html	/^    Generate dynamically. <\/span><span class="marked0"><a name="line54"><\/a>54$/;"	a
+line55	coverage/lib-awsymandias-ec2-application_stack_rb.html	/^    name="line54"><\/a> 54 <\/span><span class="marked0"><a name="line55"><\/a> 55$/;"	a
+line55	coverage/lib-awsymandias-ec2-instance_rb.html	/^    def instance_type <\/span><span class="marked0"><a name="line55"><\/a> 55$/;"	a
+line55	coverage/lib-awsymandias_rb.html	/^    module InstanceTypes <\/span><span class="marked1"><a name="line55"><\/a>55$/;"	a
+line56	coverage/lib-awsymandias-ec2-application_stack_rb.html	/^    def reload <\/span><span class="uncovered1"><a name="line56"><\/a> 56 raise$/;"	a
+line56	coverage/lib-awsymandias-ec2-instance_rb.html	/^    class="inferred1"><a name="line56"><\/a> 56 end <\/span><span$/;"	a
+line56	coverage/lib-awsymandias_rb.html	/^    <\/span><span class="marked0"><a name="line56"><\/a>56 M1_LARGE =$/;"	a
+line57	coverage/lib-awsymandias-ec2-application_stack_rb.html	/^    class="uncovered0"><a name="line57"><\/a> 57$/;"	a
+line57	coverage/lib-awsymandias-ec2-instance_rb.html	/^    class="inferred0"><a name="line57"><\/a> 57 <\/span><span class="marked1"><a$/;"	a
+line57	coverage/lib-awsymandias_rb.html	/^    class="marked1"><a name="line57"><\/a>57 M1_XLARGE =$/;"	a
+line58	coverage/lib-awsymandias-ec2-application_stack_rb.html	/^    remote call. <\/span><span class="uncovered1"><a name="line58"><\/a> 58 self$/;"	a
+line58	coverage/lib-awsymandias_rb.html	/^    class="inferred0"><a name="line58"><\/a>58 <\/span><span class="marked1"><a$/;"	a
+line59	coverage/lib-awsymandias-ec2-application_stack_rb.html	/^    <\/span><span class="uncovered0"><a name="line59"><\/a> 59 end <\/span><span$/;"	a
+line6	coverage/lib-awsymandias-ec2-instance_rb.html	/^    class="marked1"><a name="line6"><\/a> 6 class Instance &lt;$/;"	a
+line6	coverage/lib-awsymandias-simple_db_rb.html	/^    class="marked1"><a name="line6"><\/a> 6 @connection ||=$/;"	a
+line6	coverage/lib-awsymandias_rb.html	/^    <\/span><span class="marked0"><a name="line6"><\/a> 6 require 'activesupport'$/;"	a
+line60	coverage/lib-awsymandias-ec2-application_stack_rb.html	/^    class="inferred1"><a name="line60"><\/a> 60 <\/span><span class="marked0"><a$/;"	a
+line60	coverage/lib-awsymandias-ec2-instance_rb.html	/^    class="inferred1"><a name="line60"><\/a> 60 end <\/span><span$/;"	a
+line60	coverage/lib-awsymandias_rb.html	/^    Money.new(20)) <\/span><span class="marked0"><a name="line60"><\/a>60$/;"	a
+line61	coverage/lib-awsymandias-ec2-instance_rb.html	/^    class="inferred0"><a name="line61"><\/a> 61 <\/span><span class="marked1"><a$/;"	a
+line61	coverage/lib-awsymandias_rb.html	/^    <\/span><span class="inferred1"><a name="line61"><\/a>61 end <\/span><span$/;"	a
+line62	coverage/lib-awsymandias_rb.html	/^    class="inferred0"><a name="line62"><\/a>62 <\/span><span class="inferred1"><a$/;"	a
+line64	coverage/lib-awsymandias-ec2-application_stack_rb.html	/^    class="marked1"><a name="line64"><\/a> 64 self <\/span><span$/;"	a
+line64	coverage/lib-awsymandias-ec2-instance_rb.html	/^    class="marked1"><a name="line64"><\/a> 64 Time.now - self.launch_time$/;"	a
+line64	coverage/lib-awsymandias_rb.html	/^    class="inferred0"><a name="line64"><\/a>64 # TODO Generate dynamically.$/;"	a
+line65	coverage/lib-awsymandias-ec2-application_stack_rb.html	/^    class="inferred0"><a name="line65"><\/a> 65 end <\/span><span$/;"	a
+line65	coverage/lib-awsymandias-ec2-instance_rb.html	/^    <\/span><span class="inferred0"><a name="line65"><\/a> 65 end <\/span><span$/;"	a
+line65	coverage/lib-awsymandias_rb.html	/^    <\/span><span class="marked1"><a name="line65"><\/a>65 module$/;"	a
+line66	coverage/lib-awsymandias-ec2-application_stack_rb.html	/^    class="inferred1"><a name="line66"><\/a> 66 <\/span><span class="marked0"><a$/;"	a
+line66	coverage/lib-awsymandias-ec2-instance_rb.html	/^    class="inferred1"><a name="line66"><\/a> 66 <\/span><span class="marked0"><a$/;"	a
+line66	coverage/lib-awsymandias_rb.html	/^    AvailabilityZones <\/span><span class="marked0"><a name="line66"><\/a>66$/;"	a
+line68	coverage/lib-awsymandias_rb.html	/^    class="marked0"><a name="line68"><\/a>68 US_EAST_1C = &quot;us_east_1c&quot;$/;"	a
+line69	coverage/lib-awsymandias-ec2-application_stack_rb.html	/^    class="inferred0"><a name="line69"><\/a> 69 end <\/span><span$/;"	a
+line69	coverage/lib-awsymandias-ec2-instance_rb.html	/^    class="marked0"><a name="line69"><\/a> 69 instance_type.price_per_hour *$/;"	a
+line69	coverage/lib-awsymandias_rb.html	/^    <\/span><span class="inferred1"><a name="line69"><\/a>69 <\/span><span$/;"	a
+line7	coverage/lib-awsymandias-ec2-instance_rb.html	/^    ActiveResource::Base <\/span><span class="marked0"><a name="line7"><\/a> 7$/;"	a
+line7	coverage/lib-awsymandias-simple_db_rb.html	/^    ::AwsSdb::Service.new({ <\/span><span class="marked0"><a name="line7"><\/a> 7$/;"	a
+line7	coverage/lib-awsymandias_rb.html	/^    <\/span><span class="marked1"><a name="line7"><\/a> 7 require 'activeresource'$/;"	a
+line70	coverage/lib-awsymandias-ec2-application_stack_rb.html	/^    class="inferred1"><a name="line70"><\/a> 70 <\/span><span class="marked0"><a$/;"	a
+line70	coverage/lib-awsymandias-ec2-instance_rb.html	/^    (uptime \/ 1.hour).ceil <\/span><span class="inferred1"><a name="line70"><\/a>$/;"	a
+line70	coverage/lib-awsymandias_rb.html	/^    class="marked0"><a name="line70"><\/a>70 EU_WEST_1A = &quot;eu_west_1a&quot;$/;"	a
+line71	coverage/lib-awsymandias-ec2-instance_rb.html	/^    70 end <\/span><span class="inferred0"><a name="line71"><\/a> 71 <\/span><span$/;"	a
+line71	coverage/lib-awsymandias_rb.html	/^    <\/span><span class="marked1"><a name="line71"><\/a>71 EU_WEST_1B =$/;"	a
+line72	coverage/lib-awsymandias-ec2-instance_rb.html	/^    class="marked1"><a name="line72"><\/a> 72 class &lt;&lt; self <\/span><span$/;"	a
+line73	coverage/lib-awsymandias-ec2-instance_rb.html	/^    class="marked0"><a name="line73"><\/a> 73 def find(*args) <\/span><span$/;"	a
+line74	coverage/lib-awsymandias-ec2-instance_rb.html	/^    class="marked1"><a name="line74"><\/a> 74 opts = args.extract_options!$/;"	a
+line74	coverage/lib-awsymandias_rb.html	/^    name="line73"><\/a>73 <\/span><span class="inferred0"><a name="line74"><\/a>74$/;"	a
+line75	coverage/lib-awsymandias-ec2-application_stack_rb.html	/^    name="line74"><\/a> 74 <\/span><span class="marked0"><a name="line75"><\/a> 75$/;"	a
+line75	coverage/lib-awsymandias-ec2-instance_rb.html	/^    <\/span><span class="marked0"><a name="line75"><\/a> 75 what = args.first$/;"	a
+line75	coverage/lib-awsymandias_rb.html	/^    end <\/span><span class="inferred1"><a name="line75"><\/a>75 end <\/span><\/pre>$/;"	a
+line76	coverage/lib-awsymandias-ec2-application_stack_rb.html	/^    def port_open?(port) <\/span><span class="marked1"><a name="line76"><\/a> 76$/;"	a
+line76	coverage/lib-awsymandias-ec2-instance_rb.html	/^    <\/span><span class="inferred1"><a name="line76"><\/a> 76 <\/span><span$/;"	a
+line77	coverage/lib-awsymandias-ec2-application_stack_rb.html	/^    class="inferred0"><a name="line77"><\/a> 77 end <\/span><span$/;"	a
+line77	coverage/lib-awsymandias-ec2-instance_rb.html	/^    class="marked0"><a name="line77"><\/a> 77 if what == :all <\/span><span$/;"	a
+line78	coverage/lib-awsymandias-ec2-application_stack_rb.html	/^    class="inferred1"><a name="line78"><\/a> 78 <\/span><span class="marked0"><a$/;"	a
+line78	coverage/lib-awsymandias-ec2-instance_rb.html	/^    class="marked1"><a name="line78"><\/a> 78 find_all(opts[:instance_ids], opts)$/;"	a
+line79	coverage/lib-awsymandias-ec2-instance_rb.html	/^    <\/span><span class="inferred0"><a name="line79"><\/a> 79 else <\/span><span$/;"	a
+line8	coverage/lib-awsymandias_rb.html	/^    <\/span><span class="marked0"><a name="line8"><\/a> 8 require 'net\/telnet'$/;"	a
+line80	coverage/lib-awsymandias-ec2-instance_rb.html	/^    class="marked1"><a name="line80"><\/a> 80 find_one(what, opts) <\/span><span$/;"	a
+line81	coverage/lib-awsymandias-ec2-application_stack_rb.html	/^    class="marked0"><a name="line81"><\/a> 81 @instances.values.sum { |instance|$/;"	a
+line81	coverage/lib-awsymandias-ec2-instance_rb.html	/^    class="inferred0"><a name="line81"><\/a> 81 end <\/span><span$/;"	a
+line82	coverage/lib-awsymandias-ec2-application_stack_rb.html	/^    instance.running_cost } <\/span><span class="inferred1"><a name="line82"><\/a>$/;"	a
+line82	coverage/lib-awsymandias-ec2-instance_rb.html	/^    class="inferred1"><a name="line82"><\/a> 82 end <\/span><span$/;"	a
+line83	coverage/lib-awsymandias-ec2-application_stack_rb.html	/^    82 end <\/span><span class="inferred0"><a name="line83"><\/a> 83 <\/span><span$/;"	a
+line83	coverage/lib-awsymandias-ec2-instance_rb.html	/^    class="inferred0"><a name="line83"><\/a> 83 <\/span><span class="marked1"><a$/;"	a
+line84	coverage/lib-awsymandias-ec2-application_stack_rb.html	/^    class="marked1"><a name="line84"><\/a> 84 def inspect <\/span><span$/;"	a
+line85	coverage/lib-awsymandias-ec2-application_stack_rb.html	/^    class="uncovered0"><a name="line85"><\/a> 85 ( [ &quot;Environment #{@name},$/;"	a
+line85	coverage/lib-awsymandias-ec2-instance_rb.html	/^    class="marked0"><a name="line85"><\/a> 85 reservation_set =$/;"	a
+line86	coverage/lib-awsymandias-ec2-application_stack_rb.html	/^    class="uncovered1"><a name="line86"><\/a> 86 &quot;** #{role_name}:$/;"	a
+line87	coverage/lib-awsymandias-ec2-application_stack_rb.html	/^    #{opts.inspect}&quot; <\/span><span class="uncovered0"><a name="line87"><\/a>$/;"	a
+line87	coverage/lib-awsymandias-ec2-instance_rb.html	/^    class="uncovered0"><a name="line87"><\/a> 87 [] <\/span><span$/;"	a
+line88	coverage/lib-awsymandias-ec2-instance_rb.html	/^    class="inferred1"><a name="line88"><\/a> 88 else <\/span><span$/;"	a
+line89	coverage/lib-awsymandias-ec2-instance_rb.html	/^    class="marked0"><a name="line89"><\/a> 89$/;"	a
+line9	coverage/lib-awsymandias-support-hash_rb.html	/^    class="marked0"><a name="line9"><\/a> 9 h[k.to_s.underscore.tr(&quot;-&quot;,$/;"	a
+line9	coverage/lib-awsymandias_rb.html	/^    <\/span><span class="inferred1"><a name="line9"><\/a> 9 <\/span><span$/;"	a
+line90	coverage/lib-awsymandias-ec2-application_stack_rb.html	/^    name="line89"><\/a> 89 <\/span><span class="marked1"><a name="line90"><\/a> 90$/;"	a
+line90	coverage/lib-awsymandias-ec2-instance_rb.html	/^    class="marked1"><a name="line90"><\/a> 90$/;"	a
+line91	coverage/lib-awsymandias-ec2-application_stack_rb.html	/^    private <\/span><span class="inferred0"><a name="line91"><\/a> 91 <\/span><span$/;"	a
+line91	coverage/lib-awsymandias-ec2-instance_rb.html	/^    <\/span><span class="marked0"><a name="line91"><\/a> 91$/;"	a
+line92	coverage/lib-awsymandias-ec2-application_stack_rb.html	/^    class="marked1"><a name="line92"><\/a> 92 def$/;"	a
+line92	coverage/lib-awsymandias-ec2-instance_rb.html	/^    class="inferred1"><a name="line92"><\/a> 92 end <\/span><span$/;"	a
+line93	coverage/lib-awsymandias-ec2-instance_rb.html	/^    class="inferred0"><a name="line93"><\/a> 93 end <\/span><span$/;"	a
+line94	coverage/lib-awsymandias-ec2-application_stack_rb.html	/^    returning({}) do |h| <\/span><span class="marked1"><a name="line94"><\/a> 94$/;"	a
+line94	coverage/lib-awsymandias-ec2-instance_rb.html	/^    class="inferred1"><a name="line94"><\/a> 94 end <\/span><span$/;"	a
+line95	coverage/lib-awsymandias-ec2-application_stack_rb.html	/^    <\/span><span class="uncovered0"><a name="line95"><\/a> 95 end ) <\/span><span$/;"	a
+line95	coverage/lib-awsymandias-ec2-instance_rb.html	/^    class="inferred0"><a name="line95"><\/a> 95 end <\/span><span$/;"	a
+line96	coverage/lib-awsymandias-ec2-application_stack_rb.html	/^    class="uncovered1"><a name="line96"><\/a> 96 end <\/span><span$/;"	a
+line96	coverage/lib-awsymandias-ec2-instance_rb.html	/^    class="inferred1"><a name="line96"><\/a> 96 <\/span><span class="marked0"><a$/;"	a
+line97	coverage/lib-awsymandias-ec2-application_stack_rb.html	/^    class="inferred0"><a name="line97"><\/a> 97 <\/span><span class="marked1"><a$/;"	a
+line98	coverage/lib-awsymandias-ec2-instance_rb.html	/^    class="marked1"><a name="line98"><\/a> 98 reservation_set =$/;"	a
+line99	coverage/lib-awsymandias-ec2-application_stack_rb.html	/^    class="marked0"><a name="line99"><\/a> 99 Awsymandias::SimpleDB.delete$/;"	a
+list_domains	spec/awsymandias_spec.rb	/^        def list_domains$/;"	f	class:SimpleDBStub
+list_domains	spec/ec2/application_stack_spec.rb	/^    def list_domains$/;"	f	class:SimpleDBStub
+list_domains	vendor/aws-sdb/lib/aws_sdb/service.rb	/^    def list_domains(max = nil, token = nil)$/;"	f	class:AwsSdb.Service
+pending?	lib/awsymandias/ec2/instance.rb	/^      def pending?$/;"	f	class:Awsymandias.EC2.Instance
+port_open?	lib/awsymandias/ec2/application_stack.rb	/^      def port_open?(port)$/;"	f	class:Awsymandias.EC2
+port_open?	lib/awsymandias/ec2/instance.rb	/^      def port_open?(port)$/;"	f	class:Awsymandias.EC2.Instance
+private_dns	lib/awsymandias/ec2/instance.rb	/^      def private_dns; private_dns_name; end$/;"	f	class:Awsymandias.EC2.Instance
+public_dns	lib/awsymandias/ec2/instance.rb	/^      def public_dns;  dns_name;         end$/;"	f	class:Awsymandias.EC2.Instance
+put	lib/awsymandias/simple_db.rb	/^      def put(domain, name, stuff)$/;"	f	class:Awsymandias.SimpleDB
+put_attributes	spec/awsymandias_spec.rb	/^        def put_attributes(domain, name, attributes)$/;"	f	class:SimpleDBStub
+put_attributes	spec/ec2/application_stack_spec.rb	/^    def put_attributes(domain, name, attributes)$/;"	f	class:SimpleDBStub
+put_attributes	vendor/aws-sdb/lib/aws_sdb/service.rb	/^    def put_attributes(domain, item, attributes, replace = true)$/;"	f
+query	vendor/aws-sdb/lib/aws_sdb/service.rb	/^    def query(domain, query, max = nil, token = nil)$/;"	f
+query_with_attributes	vendor/aws-sdb/lib/aws_sdb/service.rb	/^    def query_with_attributes(domain, query, max = nil, token = nil)$/;"	f	class:AwsSdb.Service
+reformat_incoming_param_data	lib/awsymandias/support/hash.rb	/^      def reformat_incoming_param_data(params)$/;"	f	class:Awsymandias.Support.Hash
+reload	lib/awsymandias/ec2/application_stack.rb	/^      def reload$/;"	f	class:Awsymandias.EC2
+reload	lib/awsymandias/ec2/instance.rb	/^      def reload$/;"	f	class:Awsymandias.EC2.Instance
+remove_role_to_instance_id_mapping!	lib/awsymandias/ec2/application_stack.rb	/^      def remove_role_to_instance_id_mapping!$/;"	f	class:Awsymandias
+retrieve_role_to_instance_id_mapping	lib/awsymandias/ec2/application_stack.rb	/^      def retrieve_role_to_instance_id_mapping$/;"	f	class:Awsymandias
+role	lib/awsymandias/ec2/application_stack.rb	/^      def role(*names)$/;"	f	class:Awsymandias.EC2
+running?	lib/awsymandias/ec2/application_stack.rb	/^      def running?$/;"	f	class:Awsymandias.EC2
+running?	lib/awsymandias/ec2/instance.rb	/^      def running?$/;"	f	class:Awsymandias.EC2.Instance
+running_cost	lib/awsymandias/ec2/application_stack.rb	/^      def running_cost$/;"	f	class:Awsymandias.EC2
+running_cost	lib/awsymandias/ec2/instance.rb	/^      def running_cost$/;"	f	class:Awsymandias.EC2.Instance
+secret_access_key	lib/awsymandias.rb	/^    def secret_access_key$/;"	f	class:Awsymandias
+service.rb	vendor/aws-sdb/lib/aws_sdb/service.rb	1;"	F
+service_spec.rb	vendor/aws-sdb/spec/aws_sdb/service_spec.rb	1;"	F
+simple_db.rb	lib/awsymandias/simple_db.rb	1;"	F
+spec_helper.rb	vendor/aws-sdb/spec/spec_helper.rb	1;"	F
+store_role_to_instance_id_mapping!	lib/awsymandias/ec2/application_stack.rb	/^      def store_role_to_instance_id_mapping!$/;"	f	class:Awsymandias
+stub_connection_with	spec/awsymandias_spec.rb	/^    def stub_connection_with(return_value)$/;"	f
+stub_instance	spec/awsymandias_spec.rb	/^      def stub_instance(stubs={})$/;"	f
+stub_instance	spec/ec2/application_stack_spec.rb	/^  def stub_instance(stubs={})$/;"	f
+terminate!	lib/awsymandias/ec2/application_stack.rb	/^      def terminate!$/;"	f	class:Awsymandias.EC2
+terminate!	lib/awsymandias/ec2/instance.rb	/^      def terminate!$/;"	f	class:Awsymandias.EC2.Instance
+terminated?	lib/awsymandias/ec2/instance.rb	/^      def terminated?$/;"	f	class:Awsymandias.EC2.Instance
+to_params	lib/awsymandias/ec2/instance.rb	/^      def to_params$/;"	f	class:Awsymandias.EC2.Instance
+uptime	lib/awsymandias/ec2/instance.rb	/^      def uptime$/;"	f	class:Awsymandias.EC2.Instance
+zero_dollars	spec/awsymandias_spec.rb	/^    def zero_dollars$/;"	f
