@@ -16,6 +16,12 @@ module Awsymandias
         def find(name)
           returning(new(name)) do |stack|
             return nil unless stack.launched?
+            mapping = stack.send(:retrieve_role_to_instance_id_mapping)
+
+            stack.instance_variable_set(:'@instances', mapping)
+            mapping.each_pair do |role, instance|
+              stack.role role, instance.to_params
+            end
           end
         end
 
@@ -59,7 +65,9 @@ module Awsymandias
       end
 
       def terminate!
-        @instances.values.each(&:terminate!) # TODO Optimize this for a single remote call.
+        @instances.values.each do |instance| # TODO Optimize this for a single remote call.
+          instance.terminate! if instance.running?
+        end
         remove_role_to_instance_id_mapping!
         self
       end
@@ -70,6 +78,10 @@ module Awsymandias
 
       def running?
         launched? && @instances.values.all?(&:running?)
+      end
+
+      def terminated?
+        launched? && @instances.values.all?(&:terminated?)
       end
 
       def port_open?(port)
@@ -109,8 +121,6 @@ module Awsymandias
           end
         end
       end
-
     end
-
   end
 end
