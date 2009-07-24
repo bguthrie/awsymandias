@@ -63,7 +63,12 @@ module Awsymandias
         end
         store_role_to_instance_id_mapping!
         @volumes.each do |volume, options|
-          @instances[options[:role]].attach_volume(options[:volume_id], options[:unix_device])
+          instance = @instances[options[:role]]
+          role_name = options[:role]
+          until instance.reload.running? 
+            sleep(5)
+          end
+          instance.attach_volume(options[:volume_id], options[:unix_device])
         end
         self
       end
