@@ -27,6 +27,7 @@ Awsymandias is a library that helps you set up and tear down complicated AWS env
   stack = Awsymandias::EC2::ApplicationStack.new("test") do |s|
     s.role "db",  :instance_type => "m1.large", ... 
     s.role "app", :instance_type => "c1.xlarge", ... 
+    s.volume "data", :volume_id => "vol-12345", :role => "db", :unix_device => "/dev/sdj"
   end
 
   # Check if we're running by pulling stack description from SDB; if not, launch asynchronously.
