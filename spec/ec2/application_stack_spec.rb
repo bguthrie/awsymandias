@@ -97,6 +97,56 @@ module Awsymandias
         end
       end
 
+      describe "volumes" do
+        it "should be empty by default" do
+          ApplicationStack.new("foo").volumes.should be_empty
+        end
+
+        it "should be settable through the initializer" do
+          stack = ApplicationStack.new("foo", :volumes => { :db => {} })
+          stack.volumes[:db].should == {}
+        end
+
+        it "should not allow invalid options" do
+          lambda do
+            stack = ApplicationStack.new("foo", :volumes => { :db => {:some_key => "123"} })
+          end.should raise_error
+        end
+      end
+
+      describe "volume" do
+        it "should use the parameters given to the volume definition" do
+          stack = ApplicationStack.new("foo") do |s|
+            s.volume :some_volume, :volume_id => "vol-123"
+          end
+          stack.volumes[:some_volume].should == { :volume_id => "vol-123" }
+        end
+
+        it "should allow multiple volumes" do
+          stack = ApplicationStack.new("foo") do |s|
+            s.volume :volume_1, :volume_id => "vol-123"
+            s.volume :volume_2, :volume_id => "vol-456"
+          end
+          stack.volumes[:volume_1].should == { :volume_id => "vol-123" }
+          stack.volumes[:volume_2].should == { :volume_id => "vol-456" }
+        end
+
+        it "should allow volume_id, role, and unix_device as options" do
+          stack = ApplicationStack.new("foo") do |s|
+            s.volume :volume_1, :volume_id => "vol-123", :role => "foo", :unix_device => "/dev/sdj"
+          end
+          stack.volumes[:volume_1].should == { :volume_id => "vol-123", :role => "foo", :unix_device => "/dev/sdj" }
+        end
+
+        it "should not allow invalid options" do
+          lambda do
+            stack = ApplicationStack.new("foo") do |s|
+              s.volume :volume_1, :something_else => "foo"
+            end
+          end.should raise_error
+        end
+      end
+
       describe "sdb_domain" do
         it "should map to ApplicationStack::DEFAULT_SDB_DOMAIN upon creation" do
           ApplicationStack.new("foo").sdb_domain.should == ApplicationStack::DEFAULT_SDB_DOMAIN
@@ -147,6 +197,19 @@ module Awsymandias
           end.launch
 
           simpledb.get_attributes(ApplicationStack::DEFAULT_SDB_DOMAIN, "test").should == { "db1" => "abc123" }
+        end
+
+        it "should attach volumes when launched" do
+          s = ApplicationStack.new("test") do |s| 
+            s.role "db", :instance_type => Awsymandias::EC2::InstanceTypes::M1_LARGE
+            s.volume "production_data", :volume_id => "vol-123", :role => "db", :unix_device => "/dev/sdj"
+          end
+
+          instance = mock("instance1", :instance_id => "a")
+          Awsymandias::EC2::Instance.should_receive(:launch).and_return(instance)
+          instance.should_receive(:attach_volume).with("vol-123", "/dev/sdj")
+
+          s.launch
         end
       end
 

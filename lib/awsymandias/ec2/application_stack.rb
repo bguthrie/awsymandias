@@ -8,7 +8,7 @@
 module Awsymandias
   module EC2
     class ApplicationStack
-      attr_reader :name, :roles, :sdb_domain
+      attr_reader :name, :roles, :volumes, :sdb_domain
 
       DEFAULT_SDB_DOMAIN = "application-stack"
 
@@ -33,12 +33,14 @@ module Awsymandias
       end
 
       def initialize(name, opts={})
-        opts.assert_valid_keys! :roles
+        opts.assert_valid_keys! :roles, :volumes
 
         @name       = name
         @roles      = opts[:roles] || {}
         @sdb_domain = opts[:sdb_domain] || DEFAULT_SDB_DOMAIN
         @instances  = {}
+        @volumes    = {}
+        opts[:volumes].each { |name, opts| volume(name, opts) } if opts[:volumes]
         yield self if block_given?
       end
 
@@ -50,11 +52,19 @@ module Awsymandias
         end
       end
 
+      def volume(name, opts = {})
+        opts.assert_valid_keys :volume_id, :role, :unix_device
+        @volumes[name] = opts
+      end
+
       def launch
         @roles.each do |name, params| # TODO Optimize this for a single remote call.
           @instances[name] = Awsymandias::EC2::Instance.launch(params)
         end
         store_role_to_instance_id_mapping!
+        @volumes.each do |volume, options|
+          @instances[options[:role]].attach_volume(options[:volume_id], options[:unix_device])
+        end
         self
       end
 
