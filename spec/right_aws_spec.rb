@@ -59,7 +59,7 @@ module Awsymandias
         stub_volumes [{ :aws_id => 'a_volume_id', :aws_status => 'available' }]
         
         @connection.should_receive(:create_volume).with('some_snapshot',123,'a_zone').and_return(new_volume = mock)
-        new_volume.should_receive(:aws_id).any_number_of_times.and_return('a_volume_id')
+        new_volume.should_receive(:[]).with(:aws_id).any_number_of_times.and_return('a_volume_id')
         RightAws.should_receive(:snapshot_size).and_return(123)
         RightAws.wait_for_create_volume('some_snapshot','a_zone').should == new_volume
       end
@@ -69,7 +69,7 @@ module Awsymandias
       it "should call create_snapshot and return the snapshot when its status is 'completed'" do
         stub_snapshots [{ :aws_id => 'a_snapshot_id', :aws_status => 'completed' }]
         @connection.should_receive(:create_snapshot).with('some_volume').and_return(new_snapshot = mock)
-        new_snapshot.should_receive(:aws_id).and_return('a_snapshot_id')
+        new_snapshot.should_receive(:[]).with(:aws_id).and_return('a_snapshot_id')
         RightAws.wait_for_create_snapshot('some_volume').should == new_snapshot
       end
     end

@@ -211,7 +211,7 @@ module Awsymandias
             :key_name => "gsg-keypair",
             :instance_type => Awsymandias::EC2::InstanceTypes::M1_SMALL,
             :availability_zone => Awsymandias::EC2::AvailabilityZones::US_EAST_1A        
-          ).instance_id.should == "i-pending-instance"
+          )
         end
 
         it "should convert the instance type it's given to a string as needed" do

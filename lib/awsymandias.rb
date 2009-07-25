@@ -1,7 +1,6 @@
 unless defined?(Awsymandias)
   Dir[File.dirname(__FILE__) + "/../vendor/**/lib"].each { |dir| $: << dir }
 
-  require 'EC2'
   require 'right_aws'
   require 'aws_sdb'
   require 'money'
@@ -9,7 +8,6 @@ unless defined?(Awsymandias)
   require 'activeresource'
   require 'net/telnet'
 
-  require File.dirname(__FILE__) + "/awsymandias/support"
   Dir[File.dirname(__FILE__) + "/awsymandias/**/*.rb"].each { |file| require file }
 
   module Awsymandias
@@ -44,6 +42,25 @@ unless defined?(Awsymandias)
       def verbose_output(message)
         puts message if Awsymandias.verbose
       end
+      
+      def defined_stacks
+        puts "Stacks:  "
+        Awsymandias.stack_names.each do |stack_name|
+          stack = ApplicationStack.find(stack_name)
+          puts stack.inspect if stack
+          puts ""
+        end
+      end      
     end
+  end
+end
+
+# Supress warning about SSL peer verification
+class Net::HTTP
+  alias_method :old_initialize, :initialize
+  def initialize(*args)
+    old_initialize(*args)
+    @ssl_context = OpenSSL::SSL::SSLContext.new
+    @ssl_context.verify_mode = OpenSSL::SSL::VERIFY_NONE
   end
 end

@@ -39,21 +39,21 @@ describe Awsymandias do
     
   end
   
-  describe Awsymandias::EC2 do    
+  describe Awsymandias::RightAws do    
     def zero_dollars
       Money.new(0)
     end
     
     describe "connection" do
-      it "should configure an instance of EC2::Base" do
+      it "should configure an instance of RightAws::Ec2" do
         Awsymandias.access_key_id = "configured key"
         Awsymandias.secret_access_key = "configured secret"
 
-        ::EC2::Base.should_receive(:new).
-          with(hash_including(:access_key_id => "configured key", :secret_access_key => "configured secret")).
+        ::RightAws::Ec2.should_receive(:new).
+          with("configured key", "configured secret", anything).
           and_return(:a_connection)
 
-        Awsymandias::EC2.connection.should == :a_connection
+        Awsymandias::RightAws.connection.should == :a_connection
       end    
     end
     
