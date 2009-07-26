@@ -143,7 +143,7 @@ module Awsymandias
       @instances.each_pair do |instance_name, instance| 
         metadata[:instances][instance_name] = { :aws_instance_id => instance.aws_instance_id, 
                                                 :name => instance.name,
-                                                :attached_volumes => instance.attached_volumes.map { |vol| vol[:aws_id] }
+                                                :attached_volumes => instance.attached_volumes.map { |vol| vol.aws_id }
                                               }
       end          
   

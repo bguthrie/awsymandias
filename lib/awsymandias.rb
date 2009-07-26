@@ -8,6 +8,7 @@ unless defined?(Awsymandias)
   require 'activeresource'
   require 'net/telnet'
 
+  Dir[File.dirname(__FILE__) + "/extensions/**/*.rb"].each { |file| require file }
   Dir[File.dirname(__FILE__) + "/awsymandias/**/*.rb"].each { |file| require file }
 
   module Awsymandias
@@ -52,15 +53,5 @@ unless defined?(Awsymandias)
         end
       end      
     end
-  end
-end
-
-# Supress warning about SSL peer verification
-class Net::HTTP
-  alias_method :old_initialize, :initialize
-  def initialize(*args)
-    old_initialize(*args)
-    @ssl_context = OpenSSL::SSL::SSLContext.new
-    @ssl_context.verify_mode = OpenSSL::SSL::VERIFY_NONE
   end
 end

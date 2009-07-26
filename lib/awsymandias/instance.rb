@@ -13,32 +13,32 @@ module Awsymandias
     def private_dns; private_dns_name; end
 
     def attached_volumes
-      Awsymandias::RightAws.connection.describe_volumes.select { |volume| volume[:aws_instance_id] == instance_id }
+      Awsymandias::RightAws.describe_volumes.select { |volume| volume.aws_instance_id == instance_id }
     end
 
     def attach_volume(volume_id, unix_device)
-      volume_info = Awsymandias::RightAws.connection.describe_volumes(volume_id).first
-      if volume_info[:aws_status] != "available"
-        if volume_info[:aws_instance_id] == instance_id
+      volume_info = Awsymandias::RightAws.describe_volumes(volume_id).first
+      if volume_info.aws_status != "available"
+        if volume_info.aws_instance_id == instance_id
           Awsymandias.verbose_output "\tVolume #{volume_info} is already attached to #{instance_id}."
           return
         else 
-          raise "Volume #{volume_id} is already attached to #{volume_info[:aws_instance_id]}.  Can't attach to #{instance_id}."
+          raise "Volume #{volume_id} is already attached to #{volume_info.aws_instance_id}.  Can't attach to #{instance_id}."
         end
       end
 
       Awsymandias.verbose_output "\tTrying to attach volume #{volume_id} to #{instance_id} at #{unix_device}"
-      volume = Awsymandias::RightAws.connection.attach_volume volume_id, instance_id, unix_device
+      volume = Awsymandias::RightAws.attach_volume volume_id, instance_id, unix_device
 
-      Awsymandias.wait_for "volume #{volume[:aws_id]} to attach to instance #{instance_id} on device #{unix_device}", 3 do
-        Awsymandias::RightAws.connection.describe_volumes(volume[:aws_id]).first[:aws_attachment_status] == 'attached'
+      Awsymandias.wait_for "volume #{volume.aws_id} to attach to instance #{instance_id} on device #{unix_device}", 3 do
+        Awsymandias::RightAws.describe_volumes(volume.aws_id).first.aws_attachment_status == 'attached'
       end
     end
 
     def detach_volume(volume_id, unix_device)
-      Awsymandias::RightAws.connection.detach_volume volume_id, instance_id, unix_device
+      Awsymandias::RightAws.detach_volume volume_id, instance_id, unix_device
       Awsymandias.wait_for "volume #{volume_id} to detach..", 3 do
-        Awsymandias::RightAws.connection.describe_volumes(volume_id).first[:aws_status] == 'available'
+        Awsymandias::RightAws.connection.describe_volumes(volume_id).first.aws_status == 'available'
       end
     end
     
@@ -67,8 +67,8 @@ module Awsymandias
     end
     
     def snapshot_attached?(snapshot_id)
-      Awsymandias::RightAws.connection.describe_volumes.each do |volume|
-        return true if volume[:snapshot_id] == snapshot_id && volume[:aws_instance_id] == instance_id
+      Awsymandias::RightAws.describe_volumes.each do |volume|
+        return true if volume.snapshot_id == snapshot_id && volume.aws_instance_id == instance_id
       end
       false
     end
@@ -83,7 +83,7 @@ module Awsymandias
     end
   
     def volume_attached_to_unix_device(unix_device)
-      attached_volumes.select { |vol| vol[:aws_device] == unix_device }.first
+      attached_volumes.select { |vol| vol.aws_device == unix_device }.first
     end
 
     def reload
