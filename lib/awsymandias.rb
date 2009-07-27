@@ -2,7 +2,7 @@ unless defined?(Awsymandias)
   Dir[File.dirname(__FILE__) + "/../vendor/**/lib"].each { |dir| $: << dir }
 
   require 'right_aws'
-  require 'aws_sdb'
+  require "sdb/right_sdb_interface"
   require 'money'
   require 'activesupport'
   require 'activeresource'
@@ -28,7 +28,7 @@ unless defined?(Awsymandias)
       end
     
       def stack_names
-        Awsymandias::SimpleDB.connection.query('application-stack', "").flatten.select { |stack_name| !stack_name.blank? }
+        Awsymandias::SimpleDB.query('application-stack', "").flatten.select { |stack_name| !stack_name.blank? }
       end
     
       def wait_for(message, refresh_seconds, &block)
@@ -44,7 +44,7 @@ unless defined?(Awsymandias)
         puts message if Awsymandias.verbose
       end
       
-      def defined_stacks
+      def describe_stacks
         puts "Stacks:  "
         Awsymandias.stack_names.each do |stack_name|
           stack = ApplicationStack.find(stack_name)

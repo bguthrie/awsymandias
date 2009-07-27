@@ -126,9 +126,12 @@ module Awsymandias
     
     def inspect
       output = []
-      output << "   Stack:  #{name}"
+      output << "   #{name}"
       @instances.each_pair do |instance_name, instance|
         output << "     #{instance_name}\t#{instance.instance_id}\t#{instance.aws_state}\t#{instance.aws_availability_zone}\t#{instance.aws_instance_type.name}\t#{instance.aws_image_id}\tLaunched #{instance.aws_launch_time}"
+        instance.attached_volumes.each do |volume|
+          output << "         #{volume.aws_id} -> #{volume.aws_device}"
+        end
       end
       output
     end
@@ -147,8 +150,6 @@ module Awsymandias
                                               }
       end          
   
-      metadata.each_pair { |key, value| metadata[key] = Marshal.dump(value) }
- 
       Awsymandias::SimpleDB.put @sdb_domain, @name, metadata
     end
 
@@ -160,8 +161,6 @@ module Awsymandias
       metadata = Awsymandias::SimpleDB.get @sdb_domain, @name 
       
       unless metadata.empty?
-        metadata.keys.each { |key| metadata[key.to_sym] = Marshal.load( Base64.decode64( metadata.delete(key).first ) ) }
-        
         @unlaunched_instances = metadata[:unlaunched_instances]
         
         if !metadata[:instances].empty?
