@@ -208,6 +208,7 @@ module Awsymandias
           instance = mock("instance1", :instance_id => "a")
           Awsymandias::EC2::Instance.should_receive(:launch).and_return(instance)
           instance.should_receive(:attach_volume).with("vol-123", "/dev/sdj")
+          instance.should_receive(:reload).and_return mock("instance1 running", :running? => true)
 
           s.launch
         end
