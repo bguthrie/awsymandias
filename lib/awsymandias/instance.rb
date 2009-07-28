@@ -38,7 +38,7 @@ module Awsymandias
     def detach_volume(volume_id, unix_device)
       Awsymandias::RightAws.detach_volume volume_id, instance_id, unix_device
       Awsymandias.wait_for "volume #{volume_id} to detach..", 3 do
-        Awsymandias::RightAws.connection.describe_volumes(volume_id).first.aws_status == 'available'
+        Awsymandias::RightAws.describe_volumes(volume_id).first.aws_status == 'available'
       end
     end
     

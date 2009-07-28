@@ -8,16 +8,15 @@ module Awsymandias
       end
 
       def put(domain, name, stuff, replace = false)
-        stuff.each_pair { |key, value| stuff[key] = Marshal.dump(value) }
+        stuff.each_pair { |key, value| stuff[key] = Marshal.dump(value).gsub("\n","\\n") }
         connection.put_attributes handle_domain(domain), name, stuff, replace
       end
 
       def get(domain, name)
         stuff = connection.get_attributes(handle_domain(domain), name)[:attributes] || {}
         stuff.keys.each do |key| 
-          value = stuff.delete(key)
-          value = value.join('') if value.is_a? Array
-          stuff[key.to_sym] = Marshal.load( Base64.decode64( value ) ) 
+          value = stuff.delete(key).first
+          stuff[key.to_sym] = Marshal.load( Base64.decode64( value ).gsub("\\n","\n") ) 
         end
         stuff
       end

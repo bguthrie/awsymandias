@@ -9,7 +9,7 @@ describe Awsymandias do
       Awsymandias.secret_access_key = "configured secret"
 
       Awsymandias::SimpleDB.should_receive(:connection).and_return(connection = mock)
-      connection.should_receive(:query).with('application-stack','').and_return(['x','y','z'])
+      connection.should_receive(:query).with('application-stack','', nil, nil).and_return( { :items => ['x','y','z'] } )
       Awsymandias.stack_names.should == ['x','y','z']
     end
     
@@ -18,19 +18,19 @@ describe Awsymandias do
       Awsymandias.secret_access_key = "configured secret"
 
       Awsymandias::SimpleDB.should_receive(:connection).and_return(connection = mock)
-      connection.should_receive(:query).with('application-stack','').and_return(['x','','y','z'])
+        connection.should_receive(:query).with('application-stack','', nil, nil).and_return( { :items => ['x','','y','z' ] } )
       Awsymandias.stack_names.should == ['x','y','z']
     end
   end
   
   describe Awsymandias::SimpleDB do
     describe "connection" do
-      it "configure an instance of AwsSdb::Service" do
+      it "configure an instance of RightAws::SdbInterface" do
         Awsymandias.access_key_id = "configured key"
         Awsymandias.secret_access_key = "configured secret"
       
-        ::AwsSdb::Service.should_receive(:new).
-          with(hash_including(:access_key_id => "configured key", :secret_access_key => "configured secret")).
+        ::RightAws::SdbInterface.should_receive(:new).
+          with("configured key", "configured secret", anything).
           and_return(:a_connection)
       
         Awsymandias::SimpleDB.connection.should == :a_connection

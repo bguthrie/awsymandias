@@ -33,7 +33,25 @@ module Awsymandias
     attr_accessor :simpledb
 
     def stub_instance(stubs={})
-      instance = Awsymandias::Instance.new({:aws_instance_id => "i-12345a3c"}.merge(stubs))
+      instance_defaults = {:aws_instance_type=>"m1.large",
+                           :ami_launch_index=>"0",
+                           :aws_reason=>"",
+                           :aws_launch_time=>"2009-07-23T13:57:22.000Z",
+                           :aws_owner=>"423319072129",
+                           :ssh_key_name=>"gsg-keypair",
+                           :aws_reservation_id=>"r-dd6733b4",
+                           :aws_kernel_id=>"aki-b51cf9dc",
+                           :aws_instance_id=>"i-12345a3c",
+                           :aws_availability_zone=>"us-east-1b",
+                           :aws_state=>"running",
+                           :aws_groups=>["default"],
+                           :aws_ramdisk_id=>"ari-b31cf9da",
+                           :aws_image_id=>"ami-some-image",
+                           :dns_name=>"ec2-174-129-118-52.compute-1.amazonaws.com",
+                           :aws_state_code=>"16",
+                           :aws_product_codes=>[],
+                           :private_dns_name=>"ip-10-244-226-239.ec2.internal"}
+      instance = Awsymandias::Instance.new(instance_defaults.merge(stubs))
       instance.should_receive(:attached_volumes).any_number_of_times.and_return([])
       instance
     end
@@ -123,16 +141,15 @@ module Awsymandias
           s.role "app", :instance_type => Awsymandias::EC2::InstanceTypes::M1_LARGE
         end
         
-        inst1 = mock("instance1", :aws_instance_id => "a", :attached_volumes => [])
-        inst1.should_receive(:name=)
-        inst1.should_receive(:name)
+        s.should_receive(:store_app_stack_metadata!).any_number_of_times.and_return(nil)
+        inst1 = stub_instance :instance_type => Awsymandias::EC2::InstanceTypes::C1_XLARGE
+        
         Awsymandias::Instance.should_receive(:launch).
           with({ :instance_type => Awsymandias::EC2::InstanceTypes::C1_XLARGE }).
           and_return(inst1)
           
-        inst2 = mock("instance2", :aws_instance_id => "b", :attached_volumes => [])
-        inst2.should_receive(:name=)
-        inst2.should_receive(:name)
+        inst2 = stub_instance :instance_type => Awsymandias::EC2::InstanceTypes::M1_LARGE
+        
         Awsymandias::Instance.should_receive(:launch).
           with({ :instance_type => Awsymandias::EC2::InstanceTypes::M1_LARGE }).
           and_return(inst2)
@@ -145,6 +162,7 @@ module Awsymandias
           s.role "db",  :instance_type => Awsymandias::EC2::InstanceTypes::C1_XLARGE
           s.role "app", :instance_type => Awsymandias::EC2::InstanceTypes::M1_LARGE
         end
+        s.should_receive(:store_app_stack_metadata!).any_number_of_times.and_return(nil)
         
         instance_1 = stub_instance
         instance_2 = stub_instance
@@ -169,10 +187,10 @@ module Awsymandias
         s = ApplicationStack.new("test") do |s| 
           s.role "db",  :instance_type => Awsymandias::EC2::InstanceTypes::C1_XLARGE
         end
+        s.should_receive(:store_app_stack_metadata!).any_number_of_times.and_return(nil)
         
         inst = mock("instance1", :aws_instance_id => "a", :attached_volumes => [])
         inst.should_receive(:name=)
-        inst.should_receive(:name)
         Awsymandias::Instance.should_receive(:launch).
           with({ :instance_type => Awsymandias::EC2::InstanceTypes::C1_XLARGE }).
           and_return(inst)
@@ -200,6 +218,7 @@ module Awsymandias
         
       it "should be true if launched and instances are non-empty" do
         s = ApplicationStack.new("test") { |s| s.role "db" }
+        s.should_receive(:store_app_stack_metadata!).any_number_of_times.and_return(nil)
         Awsymandias::Instance.stub!(:launch).and_return stub_instance
         s.launch
         s.launched?.should be_true
@@ -213,7 +232,9 @@ module Awsymandias
   
       it "should be false if launched but all instances are pending" do
         Awsymandias::Instance.stub!(:launch).and_return stub_instance(:aws_state => { :name => "pending" })
-        ApplicationStack.new("test") {|s| s.role "db_1"}.launch.should_not be_running
+        s = ApplicationStack.new("test") {|s| s.role "db_1"}
+        s.should_receive(:store_app_stack_metadata!).any_number_of_times.and_return(nil)
+        s.launch.should_not be_running
       end
   
       it "should be false if launched and some instances are pending" do
@@ -221,6 +242,7 @@ module Awsymandias
           s.role "db_1", :instance_type => Awsymandias::EC2::InstanceTypes::C1_XLARGE
           s.role "app_1", :instance_type => Awsymandias::EC2::InstanceTypes::M1_LARGE
         end
+        s.should_receive(:store_app_stack_metadata!).any_number_of_times.and_return(nil)
         
         Awsymandias::Instance.stub!(:launch).
           with({ :instance_type => Awsymandias::EC2::InstanceTypes::C1_XLARGE }).
@@ -239,6 +261,7 @@ module Awsymandias
           s.role "db_1", :instance_type => Awsymandias::EC2::InstanceTypes::C1_XLARGE
           s.role "app_1", :instance_type => Awsymandias::EC2::InstanceTypes::M1_LARGE
         end
+        s.should_receive(:store_app_stack_metadata!).any_number_of_times.and_return(nil)
         
         Awsymandias::Instance.stub!(:launch).
           with({ :instance_type => Awsymandias::EC2::InstanceTypes::C1_XLARGE }).
@@ -258,6 +281,7 @@ module Awsymandias
         s = ApplicationStack.new("test") do |s| 
           s.role "app", :instance_type => Awsymandias::EC2::InstanceTypes::C1_XLARGE
         end
+        s.should_receive(:store_app_stack_metadata!).any_number_of_times.and_return(nil)
         
         instance = stub_instance
         instance.should_receive(:port_open?).with(100).and_return(true)
@@ -271,6 +295,7 @@ module Awsymandias
         s = ApplicationStack.new("test") do |s| 
           s.role "app", :instance_type => Awsymandias::EC2::InstanceTypes::C1_XLARGE
         end
+        s.should_receive(:store_app_stack_metadata!).any_number_of_times.and_return(nil)
         
         instance = stub_instance
         instance.should_receive(:port_open?).with(100).and_return(false)
@@ -285,6 +310,7 @@ module Awsymandias
           s.role "app1", :instance_type => Awsymandias::EC2::InstanceTypes::C1_XLARGE
           s.role "app2", :instance_type => Awsymandias::EC2::InstanceTypes::C1_XLARGE
         end
+        s.should_receive(:store_app_stack_metadata!).any_number_of_times.and_return(nil)
         
         instance1, instance2 = [stub_instance, stub_instance]
         instance1.should_receive(:port_open?).with(100).and_return(true)
@@ -300,6 +326,7 @@ module Awsymandias
           s.role "app1", :instance_type => Awsymandias::EC2::InstanceTypes::C1_XLARGE
           s.role "app2", :instance_type => Awsymandias::EC2::InstanceTypes::C1_XLARGE
         end
+        s.should_receive(:store_app_stack_metadata!).any_number_of_times.and_return(nil)
         
         instance1, instance2 = [stub_instance, stub_instance]
         instance1.should_receive(:port_open?).with(100).and_return(true)
@@ -315,12 +342,16 @@ module Awsymandias
     describe "terminate!" do
       it "should not do anything if not running" do
         s = ApplicationStack.new("test") { |s| s.role "db" }
+        s.should_receive(:remove_app_stack_metadata!).once.and_return(nil)
+        s.should_receive(:store_app_stack_metadata!).any_number_of_times.and_return(nil)
         Awsymandias::RightAws.should_receive(:connection).never
         s.terminate!
       end
   
       it "should terminate all instances if running" do
         s = ApplicationStack.new("test") { |s| s.role "db" }
+        s.should_receive(:remove_app_stack_metadata!).once.and_return(nil)
+        s.should_receive(:store_app_stack_metadata!).any_number_of_times.and_return(nil)
         mock_instance = mock("an_instance", :aws_instance_id => "i-foo", :running? => true, :attached_volumes => [])
         mock_instance.should_receive(:name=).any_number_of_times
         mock_instance.should_receive(:name).any_number_of_times
@@ -331,8 +362,9 @@ module Awsymandias
       end
   
       it "should remove any stored role name mappings" do
-        Awsymandias::SimpleDB.put ApplicationStack::DEFAULT_SDB_DOMAIN, "test", "db_1" => ["instance_id"]
         s = ApplicationStack.new("test") { |s| s.role "db_1" }
+        s.should_receive(:remove_app_stack_metadata!).once.and_return(nil)
+        s.should_receive(:store_app_stack_metadata!).any_number_of_times.and_return(nil)
         mock_instance = mock("an_instance", :aws_instance_id => "i-foo", :running? => true, :attached_volumes => [])
         mock_instance.should_receive(:name=).any_number_of_times
         mock_instance.should_receive(:name).any_number_of_times
@@ -340,7 +372,6 @@ module Awsymandias
         Awsymandias::Instance.stub!(:launch).and_return(mock_instance)
         s.launch
         s.terminate!
-        Awsymandias::SimpleDB.get(ApplicationStack::DEFAULT_SDB_DOMAIN, "test").should be_blank
       end
     end
   
