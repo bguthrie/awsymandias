@@ -78,7 +78,7 @@ module Awsymandias
       @unlaunched_instances.each_pair do |instance_name, params|
         @instances[instance_name] = Awsymandias::Instance.launch(params)
         @instances[instance_name].name = instance_name
-        @unlaunched_instances[instance_name] = nil
+        @unlaunched_instances.delete instance_name
       end
       store_app_stack_metadata!
       self

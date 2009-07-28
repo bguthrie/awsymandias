@@ -7,7 +7,7 @@ module Awsymandias
                                                    { :logger => Logger.new("/dev/null") }.merge(opts)
       end
 
-      def put(domain, name, stuff, replace = false)
+      def put(domain, name, stuff, replace = true)
         stuff.each_pair { |key, value| stuff[key] = Marshal.dump(value).gsub("\n","\\n") }
         connection.put_attributes handle_domain(domain), name, stuff, replace
       end
