@@ -128,7 +128,7 @@ module Awsymandias
       output = []
       output << "   #{name}"
       @instances.each_pair do |instance_name, instance|
-        output << "     #{instance_name}\t#{instance.instance_id}\t#{instance.aws_state}\t#{instance.aws_availability_zone}\t#{instance.aws_instance_type.name}\t#{instance.aws_image_id}\tLaunched #{instance.aws_launch_time}"
+        output << "     #{instance_name}\t#{instance.instance_id}\t#{instance.aws_state}\t#{instance.aws_availability_zone}\t#{instance.aws_instance_type.name}\t#{instance.aws_image_id}\t#{instance.public_dns}\tLaunched #{instance.aws_launch_time}"
         instance.attached_volumes.each do |volume|
           output << "         #{volume.aws_id} -> #{volume.aws_device}"
         end
