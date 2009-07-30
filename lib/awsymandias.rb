@@ -47,7 +47,7 @@ unless defined?(Awsymandias)
       def describe_stacks
         puts "Stacks:  "
         Awsymandias.stack_names.each do |stack_name|
-          stack = ApplicationStack.find(stack_name)
+          stack = EC2::ApplicationStack.find(stack_name)
           puts stack.inspect if stack
           puts ""
         end
