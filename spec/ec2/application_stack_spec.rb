@@ -192,7 +192,12 @@ module Awsymandias
           ApplicationStack.define('name').name.should == 'name'
         end
         
-        
+        it "should allow defining instances with a block" do
+          definition = ApplicationStack.define('name') do
+            instance :foo, :image_id => 'foo'
+          end
+          definition.defined_instances[:foo].should == { :image_id => 'foo' }
+        end
         
         
       end

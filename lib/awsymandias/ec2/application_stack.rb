@@ -37,8 +37,10 @@ module Awsymandias
         yield self if block_given?
       end
       
-      def self.define(name)
-        StackDefinition.new(name)
+      def self.define(name, &block)
+        definition = StackDefinition.new(name)
+        definition.instance_eval(&block) if block_given?
+        definition
       end
 
       def instances
