@@ -36,6 +36,10 @@ module Awsymandias
         end
         yield self if block_given?
       end
+      
+      def self.define(name)
+        StackDefinition.new(name)
+      end
 
       def instances
         !@instances.empty? ? @instances.values : {}

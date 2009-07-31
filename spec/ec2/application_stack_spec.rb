@@ -187,7 +187,15 @@ module Awsymandias
         end
       end
     
-    
+      describe 'define' do
+        it "should store the stack name" do
+          ApplicationStack.define('name').name.should == 'name'
+        end
+        
+        
+        
+        
+      end
     
       describe "launch" do
         it "should launch its roles when launched" do
