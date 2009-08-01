@@ -177,13 +177,13 @@ module Awsymandias
       end
 
      
-      describe "sdb_domain" do
-        it "should map to ApplicationStack::DEFAULT_SDB_DOMAIN upon creation" do
-          ApplicationStack.new("foo").sdb_domain.should == ApplicationStack::DEFAULT_SDB_DOMAIN
+      describe "simpledb_domain" do
+        it "should map to ApplicationStack::DEFAULT_SIMPLEDB_DOMAIN upon creation" do
+          ApplicationStack.new("foo").simpledb_domain.should == ApplicationStack::DEFAULT_SIMPLEDB_DOMAIN
         end
     
         it "should be configurable" do
-          ApplicationStack.new("foo", :sdb_domain => "a domain").sdb_domain.should == "a domain"
+          ApplicationStack.new("foo", :simpledb_domain => "a domain").simpledb_domain.should == "a domain"
         end
       end
     

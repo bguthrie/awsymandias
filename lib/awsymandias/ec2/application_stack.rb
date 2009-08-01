@@ -1,9 +1,9 @@
 module Awsymandias
   module EC2
     class ApplicationStack
-      attr_reader :name, :roles, :sdb_domain, :unlaunched_instances, :instances, :volumes
+      attr_reader :name, :roles, :simpledb_domain, :unlaunched_instances, :instances, :volumes
 
-      DEFAULT_SDB_DOMAIN = "application-stack"
+      DEFAULT_SIMPLEDB_DOMAIN = "application-stack"
 
       class << self
         def find(name)
@@ -21,10 +21,10 @@ module Awsymandias
       end
 
       def initialize(name, opts={})
-        opts.assert_valid_keys :roles, :sdb_domain, :volumes
+        opts.assert_valid_keys :roles, :simpledb_domain, :volumes
 
         @name       = name
-        @sdb_domain = opts[:sdb_domain] || DEFAULT_SDB_DOMAIN
+        @simpledb_domain = opts[:simpledb_domain] || DEFAULT_SIMPLEDB_DOMAIN
         @instances  = {}
         @unlaunched_instances = {}
         @roles = []
@@ -164,15 +164,15 @@ module Awsymandias
                                                 }
         end          
   
-        Awsymandias::SimpleDB.put @sdb_domain, @name, metadata
+        Awsymandias::SimpleDB.put @simpledb_domain, @name, metadata
       end
 
       def remove_app_stack_metadata!
-        Awsymandias::SimpleDB.delete @sdb_domain, @name
+        Awsymandias::SimpleDB.delete @simpledb_domain, @name
       end
 
       def reload_from_metadata!
-        metadata = Awsymandias::SimpleDB.get @sdb_domain, @name 
+        metadata = Awsymandias::SimpleDB.get @simpledb_domain, @name 
       
         unless metadata.empty?
           @unlaunched_instances = metadata[:unlaunched_instances]
