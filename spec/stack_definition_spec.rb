@@ -11,6 +11,26 @@ module Awsymandias
         stackdef.name.should == 'test'
       end
     end
+
+    describe 'build_stack' do
+      it "should create an application stack object" do
+        stackdef = StackDefinition.new('test')
+        stackdef.build_stack.name.should == 'test'
+      end
+      
+      it "should populate the unlaunched_instances" do
+        stackdef = StackDefinition.new('test')
+        stackdef.instance :a, :availability_zone => 'foo'
+        stackdef.build_stack.unlaunched_instances[:a].should == { :availability_zone => 'foo' }
+      end
+      
+      it "should populate the volumes" do
+        stackdef = StackDefinition.new('test')
+        stackdef.volume :a, :unix_device => 'foo'
+        stackdef.build_stack.volumes[:a].should == { :unix_device => 'foo' }
+      end
+    end
+
  
     describe 'instance' do
       it "should save the instance definition" do

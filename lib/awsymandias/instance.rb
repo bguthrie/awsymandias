@@ -132,7 +132,7 @@ module Awsymandias
       end
 
       def instance_name_to_role(instance_name)
-        instance_name.gsub(/(.*)_\d+$/,'\1')
+        instance_name
       end
               
       def launch(opts={})

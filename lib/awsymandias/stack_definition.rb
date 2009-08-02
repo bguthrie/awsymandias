@@ -25,6 +25,13 @@ module Awsymandias
       configuration = names.extract_options!
       names.each { |name| volume(name, configuration) }
     end
+   
+    def build_stack
+      Awsymandias::EC2::ApplicationStack.new(name, 
+        :instances => defined_instances,
+        :volumes => defined_volumes
+      )
+    end
     
   end
 end

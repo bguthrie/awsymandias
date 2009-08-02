@@ -21,7 +21,7 @@ module Awsymandias
       end
 
       def initialize(name, opts={})
-        opts.assert_valid_keys :roles, :simpledb_domain, :volumes
+        opts.assert_valid_keys :instances, :simpledb_domain, :volumes
 
         @name       = name
         @simpledb_domain = opts[:simpledb_domain] || DEFAULT_SIMPLEDB_DOMAIN
@@ -29,37 +29,25 @@ module Awsymandias
         @unlaunched_instances = {}
         @roles = []
         @volumes    = {}
-        opts[:volumes].each { |name, opts| volume(name, opts) } if opts[:volumes]
-
-        if opts[:roles]
-          opts[:roles].each_pair { |role_name, params| role(role_name, params) }
+        
+        if opts[:instances]
+          @unlaunched_instances = opts[:instances]
+          opts[:instances].each { |name, configuration| define_methods_for_instance(name) }
         end
-        yield self if block_given?
+      
+        opts[:volumes].each { |name, opts| volume(name, opts) } if opts[:volumes]
       end
       
       def self.define(name, &block)
         definition = StackDefinition.new(name)
         definition.instance_eval(&block) if block_given?
-        definition
+        definition.build_stack
       end
 
       def instances
         !@instances.empty? ? @instances.values : {}
       end
 
-      def role(*names)
-        opts = names.extract_options!
-        num_instances = opts.delete(:num_instances) || 1
-        names.each do |name|
-          establish_role(name)
-          num_instances.times do |iterator|
-            instance_name = "#{name}_#{iterator.to_i + 1}"
-            @unlaunched_instances[instance_name] = opts
-            define_methods_for_instance(instance_name)
-          end
-        end
-      end
-        
       def volume(name, opts = {})
         opts.assert_valid_keys :volume_id, :instance, :unix_device
         @volumes[name] = opts
@@ -74,7 +62,7 @@ module Awsymandias
       end
     
       def define_methods_for_instance(instance_name)
-        establish_role( Awsymandias::Instance.instance_name_to_role(instance_name) ) 
+        # establish_role( Awsymandias::Instance.instance_name_to_role(instance_name) ) 
         if !self.metaclass.respond_to?(instance_name)
           self.metaclass.send(:define_method, instance_name) { @instances[instance_name] }
         end
