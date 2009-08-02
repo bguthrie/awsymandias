@@ -24,6 +24,7 @@ module Awsymandias
         
         SimpleDB.put('domain', 'key', {:foo => 'foo', :bar => {:baz => 'hmm'}})
       end
+      
     end
     
     describe 'get' do

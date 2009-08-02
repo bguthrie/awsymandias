@@ -25,7 +25,7 @@ module Awsymandias
       end
 
       def describe_snapshots(list = [])
-        connection.describe_snapshots(list).map { |s| Awsymandias::Snapshot.new s }
+        Snapshot.find(*list)
       end
     
       def describe_volumes(list = [])
