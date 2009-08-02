@@ -17,32 +17,6 @@ module Awsymandias
       Awsymandias::RightAws.describe_volumes.select { |volume| volume.aws_instance_id == instance_id }
     end
 
-    def attach_volume(volume_id, unix_device)
-      volume_info = Awsymandias::RightAws.describe_volumes(volume_id).first
-      if volume_info.aws_status != "available"
-        if volume_info.aws_instance_id == instance_id
-          Awsymandias.verbose_output "\tVolume #{volume_info} is already attached to #{instance_id}."
-          return
-        else 
-          raise "Volume #{volume_id} is already attached to #{volume_info.aws_instance_id}.  Can't attach to #{instance_id}."
-        end
-      end
-
-      Awsymandias.verbose_output "\tTrying to attach volume #{volume_id} to #{instance_id} at #{unix_device}"
-      volume = Awsymandias::RightAws.attach_volume volume_id, instance_id, unix_device
-
-      Awsymandias.wait_for "volume #{volume.aws_id} to attach to instance #{instance_id} on device #{unix_device}", 3 do
-        Awsymandias::RightAws.describe_volumes(volume.aws_id).first.aws_attachment_status == 'attached'
-      end
-    end
-
-    def detach_volume(volume_id, unix_device)
-      Awsymandias::RightAws.detach_volume volume_id, instance_id, unix_device
-      Awsymandias.wait_for "volume #{volume_id} to detach..", 3 do
-        Awsymandias::RightAws.describe_volumes(volume_id).first.aws_status == 'available'
-      end
-    end
-    
     def key_name
       @attributes['key_name'] || nil
     end
