@@ -3,7 +3,7 @@
 # It inherits from ARes::B in order to provide simple XML <-> domain model mapping.
 module Awsymandias
   class Instance < ActiveResource::Base  
-    attr_reader :role, :name
+    attr_accessor :name
       
     self.site = "mu"
   
@@ -45,11 +45,6 @@ module Awsymandias
     
     def key_name
       @attributes['key_name'] || nil
-    end
-
-    def name=(name)
-      @name = name
-      @role = Awsymandias::Instance.instance_name_to_role name
     end
 
     def pending?
@@ -131,10 +126,6 @@ module Awsymandias
         (found.size == 1 && args.first != :all) ? found.first : found
       end
 
-      def instance_name_to_role(instance_name)
-        instance_name
-      end
-              
       def launch(opts={})
         opts.assert_valid_keys :image_id, :key_name, :instance_type, :availability_zone, :user_data
         opts[:instance_type] = opts[:instance_type].name if opts[:instance_type].is_a?(Awsymandias::EC2::InstanceType)

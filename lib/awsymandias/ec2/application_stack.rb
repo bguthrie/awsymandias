@@ -1,7 +1,7 @@
 module Awsymandias
   module EC2
     class ApplicationStack
-      attr_reader :name, :roles, :simpledb_domain, :unlaunched_instances, :instances, :volumes
+      attr_reader :name, :simpledb_domain, :unlaunched_instances, :instances, :volumes
 
       DEFAULT_SIMPLEDB_DOMAIN = "application-stack"
 
@@ -27,7 +27,6 @@ module Awsymandias
         @simpledb_domain = opts[:simpledb_domain] || DEFAULT_SIMPLEDB_DOMAIN
         @instances  = {}
         @unlaunched_instances = {}
-        @roles = []
         @volumes    = {}
         
         if opts[:instances]
@@ -53,16 +52,7 @@ module Awsymandias
         @volumes[name] = opts
       end
 
-      def establish_role(role_name)
-        if !self.metaclass.respond_to?(role_name)
-          self.metaclass.send(:define_method, "#{role_name}") {  @instances.values.select { |inst| inst.name =~ /^#{role_name}_/ } }
-        end
-        @roles << role_name
-        @roles.uniq!
-      end
-    
       def define_methods_for_instance(instance_name)
-        # establish_role( Awsymandias::Instance.instance_name_to_role(instance_name) ) 
         if !self.metaclass.respond_to?(instance_name)
           self.metaclass.send(:define_method, instance_name) { @instances[instance_name] }
         end

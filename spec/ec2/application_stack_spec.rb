@@ -158,7 +158,7 @@ module Awsymandias
           stack.volumes[:volume_2].should == { :volume_id => "vol-456" }
         end
 
-        it "should allow volume_id, role, and unix_device as options" do
+        it "should allow volume_id, instance, and unix_device as options" do
           stack = ApplicationStack.define("foo") do
             volumes :volume_1, :volume_id => "vol-123", :instance => "foo", :unix_device => "/dev/sdj"
           end
@@ -200,7 +200,7 @@ module Awsymandias
       end
     
       describe "launch" do
-        it "should launch its roles when launched" do
+        it "should launch its instances when launched" do
           s = ApplicationStack.define("test") do
             instance :db,  :instance_type => InstanceTypes::C1_XLARGE
             instance :app, :instance_type => InstanceTypes::M1_LARGE
@@ -445,7 +445,7 @@ module Awsymandias
           s.terminate!      
         end
   
-        it "should remove any stored role name mappings" do
+        it "should remove any stored instance name mappings" do
           s = ApplicationStack.define("test") { instance "db_1" }
           s.should_receive(:remove_app_stack_metadata!).once.and_return(nil)
           s.should_receive(:store_app_stack_metadata!).any_number_of_times.and_return(nil)
