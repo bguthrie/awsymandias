@@ -21,8 +21,8 @@ module Awsymandias
       end
     end
 
-    def detatch
-      connection.detatch_volume volume_id, aws_instance_id, aws_device
+    def detach
+      connection.detach_volume volume_id, aws_instance_id, aws_device
       Awsymandias.wait_for "volume #{volume_id} to detach..", 3 do
         reload.available?
       end
