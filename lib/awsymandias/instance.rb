@@ -16,7 +16,14 @@ module Awsymandias
     def attached_volumes
       Awsymandias::RightAws.describe_volumes.select { |volume| volume.aws_instance_id == instance_id }
     end
-
+    
+    def attach_once_running(volume_id, unix_device)
+      Awsymandias.wait_for("#{name} (#{id}) to become available to attach #{volume_id}", 5) do
+        reload.running?
+      end
+      attach_volume(volume_id, unix_device)
+    end
+    
     def attach_volume(volume_id, unix_device)
       volume_info = Awsymandias::RightAws.describe_volumes(volume_id).first
       if volume_info.aws_status != "available"

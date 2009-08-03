@@ -281,7 +281,73 @@ module Awsymandias
 
           s.launch
         end
+        
+        it "should create volumes from snapshots and attach them to each instance of the appropriate role" do
+          s = ApplicationStack.new("test") do |s| 
+            s.role "app", :instance_type => InstanceTypes::M1_LARGE, :num_instances => 3
+            s.role "no_attached_volume", :instance_type => InstanceTypes::M1_SMALL
+            s.volume "production_data", :snapshot_id => "snap-123", :role => "app", :unix_device => "/dev/sdj"
+          end
 
+          s.should_receive(:store_app_stack_metadata!).any_number_of_times.and_return(nil)
+          s.should_receive(:sleep).any_number_of_times
+          
+          instances = stub_instance, stub_instance, stub_instance
+          no_attached_volume_instance = stub_instance
+          
+          Instance.should_receive(:launch).
+            with(hash_including(:instance_type => InstanceTypes::M1_LARGE)).exactly(3).times.
+            and_return(*instances)
+            
+          Instance.should_receive(:launch).
+            with(hash_including(:instance_type => InstanceTypes::M1_SMALL)).once.
+            and_return(no_attached_volume_instance)
+          
+          instances.each do |i|
+            i.should_receive(:reload).and_return(i)
+            i.should_receive(:running?).and_return(true)
+          end
+          
+          Awsymandias::RightAws.should_receive(:wait_for_create_volume).exactly(3).times.
+            with("snap-123", instances.first.aws_availability_zone).
+            and_return(mock(:aws_id => "vol-123-1"), mock(:aws_id => "vol-123-2"), mock(:aws_id => "vol-123-3"))
+            
+          instances[0].should_receive(:attach_volume).with("vol-123-1", "/dev/sdj")
+          instances[1].should_receive(:attach_volume).with("vol-123-2", "/dev/sdj")
+          instances[2].should_receive(:attach_volume).with("vol-123-3", "/dev/sdj")
+          no_attached_volume_instance.should_not_receive(:attach_volume)
+          
+          s.launch
+        end
+        
+        it "should create volumes from snapshots and attach them to all instances across roles" do
+          s = ApplicationStack.new("test") do |s| 
+            s.role "app", :instance_type => InstanceTypes::M1_LARGE
+            s.role "db", :instance_type => InstanceTypes::M1_LARGE
+            s.volume "volume_for_all", :snapshot_id => "snap-123", :all_instances => true, :unix_device => "/dev/sdj"
+          end
+
+          s.should_receive(:store_app_stack_metadata!).any_number_of_times.and_return(nil)
+          s.should_receive(:sleep).any_number_of_times
+          
+          instances = stub_instance, stub_instance
+          
+          Instance.should_receive(:launch).exactly(2).times.and_return(*instances)
+          
+          instances.each do |i|
+            i.should_receive(:reload).and_return(i)
+            i.should_receive(:running?).and_return(true)
+          end
+          
+          Awsymandias::RightAws.should_receive(:wait_for_create_volume).exactly(2).times.
+            with("snap-123", instances.first.aws_availability_zone).
+            and_return(mock(:aws_id => "vol-123-1"), mock(:aws_id => "vol-123-2"))
+            
+          instances[0].should_receive(:attach_volume).with("vol-123-1", "/dev/sdj")
+          instances[1].should_receive(:attach_volume).with("vol-123-2", "/dev/sdj")
+
+          s.launch
+        end
       end
       
       describe "launched?" do    
@@ -468,6 +534,17 @@ module Awsymandias
           stack.instance_variable_set :"@instances", {'inst1' => inst1, 'inst2' =>  inst2}
         
           stack.running_cost.should == Money.new(30)
+        end
+      end
+      
+      describe "create_and_attach_volumes_to_instances" do
+        it "should raise an error if a volume is already attached to the specified unix device" do
+          instance = stub_instance
+          unix_device = "/dev/sdj"
+          instance.should_receive(:volume_attached_to_unix_device, unix_device).and_return(mock(:aws_id => "vol-123"))
+          
+          lambda { ApplicationStack.new("test").create_and_attach_volumes_to_instances([instance], :unix_device => unix_device) }.
+            should raise_error(RuntimeError)
         end
       end
     

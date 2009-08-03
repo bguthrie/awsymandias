@@ -55,7 +55,7 @@ module Awsymandias
       end
         
       def volume(name, opts = {})
-        opts.assert_valid_keys :volume_id, :instance, :unix_device
+        opts.assert_valid_keys :volume_id, :instance, :unix_device, :snapshot_id, :role, :all_instances
         @volumes[name] = opts
       end
 
@@ -81,17 +81,46 @@ module Awsymandias
           @instances[instance_name].name = instance_name
           @unlaunched_instances.delete instance_name
         end
+        attach_volumes
         store_app_stack_metadata!
-        @volumes.each do |volume, options|
-          instance = @instances[options[:instance]]
-          until instance.reload.running? 
-            sleep(5)
-          end
-          instance.attach_volume(options[:volume_id], options[:unix_device])
-        end
         self
       end
-
+      
+      def attach_volumes
+        @volumes.each do |volume, options|
+          if options[:instance]
+            attach_volume_to_instance options
+          elsif options[:role]
+            create_and_attach_volumes_to_instances send(options[:role]), options
+          elsif options[:all_instances]
+            create_and_attach_volumes_to_instances instances, options
+          else
+            raise "Neither role, instance, or all_instances was specified for #{volume} volume"
+          end
+        end
+      end
+      
+      def attach_volume_to_instance(options)
+        @instances[options[:instance]].attach_once_running options[:volume_id], options[:unix_device]
+      end
+      
+      def create_and_attach_volumes_to_instances(instances, options)                  
+        volume_ids = instances.map do |i|
+          if already_attached_volume = i.volume_attached_to_unix_device(options[:unix_device])
+            raise "Another volume (#{already_attached_volume.aws_id}) is already attached to " + 
+                  "instance #{i.instance_id} at #{options[:unix_device]}."
+          end
+          
+          Awsymandias::RightAws.wait_for_create_volume(options[:snapshot_id], i.aws_availability_zone).aws_id
+        end
+        
+        sleep 5 # There seems to be a race condition between when the volume says it is available and actually being able to attach it
+                
+        instances.zip(volume_ids).each do |i, volume_id|
+          i.attach_once_running volume_id, options[:unix_device]
+        end
+      end
+      
       def reload
         raise "Can't reload unless launched" unless launched?
         @instances.values.each(&:reload)
