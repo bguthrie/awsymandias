@@ -5,7 +5,7 @@ require File.expand_path(File.dirname(__FILE__) + "/../lib/awsymandias")
 module Awsymandias
   describe RightAws do
     before :each do
-      RightAws.should_receive(:connection).any_number_of_times.and_return(@connection = mock)
+      RightAws.should_receive(:connection).any_number_of_times.and_return(@connection = mock("connection"))
     end
     
     def stub_describe_snapshots(snapshots)  

@@ -466,31 +466,37 @@ module Awsymandias
         end
   
         it "should be the sum total of the running cost of its constituent instances" do
-          inst1 = Instance.new  :aws_instance_type => 'm1.small', 
-                                             :aws_state => 'running', 
-                                             :aws_launch_time => 5.minutes.ago.strftime("%Y-%m-%dT%H:%M:00.000EDT")
-          inst2 = Instance.new  :aws_instance_type => 'c1.medium', 
-                                             :aws_state => 'running', 
-                                             :aws_launch_time => 5.minutes.ago.strftime("%Y-%m-%dT%H:%M:00.000EDT")
+          inst1, inst2 = [
+            Instance.new(
+              :aws_instance_type => 'm1.small', 
+              :aws_state => 'running', 
+              :aws_launch_time => 5.minutes.ago.strftime("%Y-%m-%dT%H:%M:00.000EDT")
+            ),
+            Instance.new(
+              :aws_instance_type => 'c1.medium', 
+              :aws_state => 'running', 
+              :aws_launch_time => 5.minutes.ago.strftime("%Y-%m-%dT%H:%M:00.000EDT")
+            )
+          ]
         
           stack = ApplicationStack.new "test"
           stack.should_receive(:launched?).and_return(true)
           stack.instance_variable_set :"@instances", {'inst1' => inst1, 'inst2' =>  inst2}
         
-          stack.running_cost.should == Money.new(30)
+          stack.running_cost.should == inst1.running_cost + inst2.running_cost
         end
       end
     
       describe "find" do
-        ##  We *really* need some tests around this
+        it "should have more than just a pending test"
       end
     
       describe "reload_from_metadata!" do
-        ##  We *really* need some tests around this
+        it "should have more than just a pending test"
       end
     
       describe "store_app_stack_metadata!" do
-        ##  We *really* need some tests around this
+        it "should have more than just a pending test"
       end
     end
   end
