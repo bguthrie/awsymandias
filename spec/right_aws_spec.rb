@@ -5,7 +5,7 @@ require File.expand_path(File.dirname(__FILE__) + "/../lib/awsymandias")
 module Awsymandias
   describe RightAws do
     before :each do
-      RightAws.should_receive(:connection).any_number_of_times.and_return(@connection = mock)
+      RightAws.should_receive(:connection).any_number_of_times.and_return(@connection = mock("connection"))
     end
     
     def stub_describe_snapshots(snapshots)  
@@ -86,13 +86,5 @@ module Awsymandias
       end
     end
     
-    describe "describe_snapshots" do
-      it "should return an array of Awsymandias::Snapshot objects." do
-        stub_describe_snapshots [{:aws_id => :some_snapshot_id}, {:aws_id => :another_snapshot_id}]
-        described = RightAws.describe_snapshots
-        described.map(&:aws_id).should == [:some_snapshot_id, :another_snapshot_id]
-        described.map(&:class).uniq.should == [Awsymandias::Snapshot]
-      end
-    end
   end
 end

@@ -1,9 +1,9 @@
 module Awsymandias
   module EC2
     class ApplicationStack
-      attr_reader :name, :roles, :sdb_domain, :unlaunched_instances, :instances, :volumes
+      attr_reader :name, :simpledb_domain, :unlaunched_instances, :instances, :volumes, :roles
 
-      DEFAULT_SDB_DOMAIN = "application-stack"
+      DEFAULT_SIMPLEDB_DOMAIN = "application-stack"
 
       class << self
         def find(name)
@@ -21,56 +21,52 @@ module Awsymandias
       end
 
       def initialize(name, opts={})
-        opts.assert_valid_keys :roles, :sdb_domain, :volumes
+        opts.assert_valid_keys :instances, :simpledb_domain, :volumes, :roles
 
         @name       = name
-        @sdb_domain = opts[:sdb_domain] || DEFAULT_SDB_DOMAIN
+        @simpledb_domain = opts[:simpledb_domain] || DEFAULT_SIMPLEDB_DOMAIN
         @instances  = {}
         @unlaunched_instances = {}
-        @roles = []
         @volumes    = {}
-        opts[:volumes].each { |name, opts| volume(name, opts) } if opts[:volumes]
-
+        @roles = {}
+        
         if opts[:roles]
-          opts[:roles].each_pair { |role_name, params| role(role_name, params) }
+          @roles = opts[:roles]
+          @roles.keys.each { |role| define_methods_for_role(role) }
         end
-        yield self if block_given?
+        
+        if opts[:instances]
+          @unlaunched_instances = opts[:instances]
+          opts[:instances].each { |name, configuration| define_methods_for_instance(name) }
+        end
+      
+        opts[:volumes].each { |name, opts| volume(name, opts) } if opts[:volumes]
+      end
+      
+      def self.define(name, &block)
+        definition = StackDefinition.new(name)
+        definition.instance_eval(&block) if block_given?
+        definition.build_stack
       end
 
       def instances
         !@instances.empty? ? @instances.values : {}
       end
 
-      def role(*names)
-        opts = names.extract_options!
-        num_instances = opts.delete(:num_instances) || 1
-        names.each do |name|
-          establish_role(name)
-          num_instances.times do |iterator|
-            instance_name = "#{name}_#{iterator.to_i + 1}"
-            @unlaunched_instances[instance_name] = opts
-            define_methods_for_instance(instance_name)
-          end
-        end
-      end
-        
       def volume(name, opts = {})
         opts.assert_valid_keys :volume_id, :instance, :unix_device, :snapshot_id, :role, :all_instances
         @volumes[name] = opts
       end
 
-      def establish_role(role_name)
-        if !self.metaclass.respond_to?(role_name)
-          self.metaclass.send(:define_method, "#{role_name}") {  @instances.values.select { |inst| inst.name =~ /^#{role_name}_/ } }
-        end
-        @roles << role_name
-        @roles.uniq!
-      end
-    
       def define_methods_for_instance(instance_name)
-        establish_role( Awsymandias::Instance.instance_name_to_role(instance_name) ) 
         if !self.metaclass.respond_to?(instance_name)
           self.metaclass.send(:define_method, instance_name) { @instances[instance_name] }
+        end
+      end
+
+      def define_methods_for_role(role_name)
+        self.metaclass.send(:define_method, role_name) do
+          @roles[role_name].map { |instance_name| @instances[instance_name] }
         end
       end
 
@@ -101,23 +97,24 @@ module Awsymandias
       end
       
       def attach_volume_to_instance(options)
-        @instances[options[:instance]].attach_once_running options[:volume_id], options[:unix_device]
+        volume = Awsymandias::RightAws.describe_volumes([options[:volume_id]]).first
+        volume.attach_to_once_running @instances[options[:instance]], options[:unix_device]
       end
       
       def create_and_attach_volumes_to_instances(instances, options)                  
-        volume_ids = instances.map do |i|
+        volumes = instances.map do |i|
           if already_attached_volume = i.volume_attached_to_unix_device(options[:unix_device])
             raise "Another volume (#{already_attached_volume.aws_id}) is already attached to " + 
                   "instance #{i.instance_id} at #{options[:unix_device]}."
           end
           
-          Awsymandias::RightAws.wait_for_create_volume(options[:snapshot_id], i.aws_availability_zone).aws_id
+          Awsymandias::RightAws.wait_for_create_volume(options[:snapshot_id], i.aws_availability_zone)
         end
         
         sleep 5 # There seems to be a race condition between when the volume says it is available and actually being able to attach it
                 
-        instances.zip(volume_ids).each do |i, volume_id|
-          i.attach_once_running volume_id, options[:unix_device]
+        instances.zip(volumes).each do |i, volume|
+          volume.attach_to_once_running i, options[:unix_device]
         end
       end
       
@@ -187,15 +184,15 @@ module Awsymandias
                                                 }
         end          
   
-        Awsymandias::SimpleDB.put @sdb_domain, @name, metadata
+        Awsymandias::SimpleDB.put @simpledb_domain, @name, metadata
       end
 
       def remove_app_stack_metadata!
-        Awsymandias::SimpleDB.delete @sdb_domain, @name
+        Awsymandias::SimpleDB.delete @simpledb_domain, @name
       end
 
       def reload_from_metadata!
-        metadata = Awsymandias::SimpleDB.get @sdb_domain, @name 
+        metadata = Awsymandias::SimpleDB.get @simpledb_domain, @name 
       
         unless metadata.empty?
           @unlaunched_instances = metadata[:unlaunched_instances]

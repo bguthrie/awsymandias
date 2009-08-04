@@ -1,6 +1,7 @@
 unless defined?(Awsymandias)
   Dir[File.dirname(__FILE__) + "/../vendor/**/lib"].each { |dir| $: << dir }
-
+  $: << File.dirname(__FILE__)
+  
   require 'right_aws'
   require "sdb/right_sdb_interface"
   require 'money'
@@ -8,7 +9,6 @@ unless defined?(Awsymandias)
   require 'activeresource'
   require 'net/telnet'
 
-  Dir[File.dirname(__FILE__) + "/extensions/**/*.rb"].each { |file| require file }
   Dir[File.dirname(__FILE__) + "/awsymandias/**/*.rb"].each { |file| require file }
 
   module Awsymandias

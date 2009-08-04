@@ -3,7 +3,7 @@
 # It inherits from ARes::B in order to provide simple XML <-> domain model mapping.
 module Awsymandias
   class Instance < ActiveResource::Base  
-    attr_reader :role, :name
+    attr_accessor :name
       
     self.site = "mu"
   
@@ -16,47 +16,9 @@ module Awsymandias
     def attached_volumes
       Awsymandias::RightAws.describe_volumes.select { |volume| volume.aws_instance_id == instance_id }
     end
-    
-    def attach_once_running(volume_id, unix_device)
-      Awsymandias.wait_for("#{name} (#{id}) to become available to attach #{volume_id}", 5) do
-        reload.running?
-      end
-      attach_volume(volume_id, unix_device)
-    end
-    
-    def attach_volume(volume_id, unix_device)
-      volume_info = Awsymandias::RightAws.describe_volumes(volume_id).first
-      if volume_info.aws_status != "available"
-        if volume_info.aws_instance_id == instance_id
-          Awsymandias.verbose_output "\tVolume #{volume_info} is already attached to #{instance_id}."
-          return
-        else 
-          raise "Volume #{volume_id} is already attached to #{volume_info.aws_instance_id}.  Can't attach to #{instance_id}."
-        end
-      end
 
-      Awsymandias.verbose_output "\tTrying to attach volume #{volume_id} to #{instance_id} at #{unix_device}"
-      volume = Awsymandias::RightAws.attach_volume volume_id, instance_id, unix_device
-
-      Awsymandias.wait_for "volume #{volume.aws_id} to attach to instance #{instance_id} on device #{unix_device}", 3 do
-        Awsymandias::RightAws.describe_volumes(volume.aws_id).first.aws_attachment_status == 'attached'
-      end
-    end
-
-    def detach_volume(volume_id, unix_device)
-      Awsymandias::RightAws.detach_volume volume_id, instance_id, unix_device
-      Awsymandias.wait_for "volume #{volume_id} to detach..", 3 do
-        Awsymandias::RightAws.describe_volumes(volume_id).first.aws_status == 'available'
-      end
-    end
-    
     def key_name
       @attributes['key_name'] || nil
-    end
-
-    def name=(name)
-      @name = name
-      @role = Awsymandias::Instance.instance_name_to_role name
     end
 
     def pending?
@@ -138,10 +100,6 @@ module Awsymandias
         (found.size == 1 && args.first != :all) ? found.first : found
       end
 
-      def instance_name_to_role(instance_name)
-        instance_name.gsub(/(.*)_\d+$/,'\1')
-      end
-              
       def launch(opts={})
         opts.assert_valid_keys :image_id, :key_name, :instance_type, :availability_zone, :user_data
         opts[:instance_type] = opts[:instance_type].name if opts[:instance_type].is_a?(Awsymandias::EC2::InstanceType)

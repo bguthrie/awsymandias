@@ -8,17 +8,16 @@ module Awsymandias
       end
 
       def put(domain, name, stuff, replace = true)
-        stuff.each_pair { |key, value| stuff[key] = Marshal.dump(value).gsub("\n","\\n") }
+        stuff.each_pair { |key, value| stuff[key] = value.to_yaml }
         connection.put_attributes handle_domain(domain), name, stuff, replace
       end
 
       def get(domain, name)
         stuff = connection.get_attributes(handle_domain(domain), name)[:attributes] || {}
-        stuff.keys.each do |key| 
-          value = stuff.delete(key).first
-          stuff[key.to_sym] = Marshal.load( Base64.decode64( value ).gsub("\\n","\n") ) 
+        stuff.inject({}) do |hash, (key, value)|
+          hash[key.to_sym] = YAML.load(value)
+          hash
         end
-        stuff
       end
 
       def delete(domain, name)

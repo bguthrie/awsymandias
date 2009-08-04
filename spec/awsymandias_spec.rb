@@ -8,7 +8,7 @@ describe Awsymandias do
       Awsymandias.access_key_id = "configured key"
       Awsymandias.secret_access_key = "configured secret"
 
-      Awsymandias::SimpleDB.should_receive(:connection).and_return(connection = mock)
+      Awsymandias::SimpleDB.should_receive(:connection).and_return(connection = mock("connection"))
       connection.should_receive(:query).with('application-stack','', nil, nil).and_return( { :items => ['x','y','z'] } )
       Awsymandias.stack_names.should == ['x','y','z']
     end
@@ -17,7 +17,7 @@ describe Awsymandias do
       Awsymandias.access_key_id = "configured key"
       Awsymandias.secret_access_key = "configured secret"
 
-      Awsymandias::SimpleDB.should_receive(:connection).and_return(connection = mock)
+      Awsymandias::SimpleDB.should_receive(:connection).and_return(connection = mock("connection"))
         connection.should_receive(:query).with('application-stack','', nil, nil).and_return( { :items => ['x','','y','z' ] } )
       Awsymandias.stack_names.should == ['x','y','z']
     end
