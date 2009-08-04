@@ -43,9 +43,9 @@ module Awsymandias
         opts[:volumes].each { |name, opts| volume(name, opts) } if opts[:volumes]
       end
       
-      def self.define(name, &block)
+      def self.define(name)
         definition = StackDefinition.new(name)
-        definition.instance_eval(&block) if block_given?
+        yield definition if block_given?
         definition.build_stack
       end
 
