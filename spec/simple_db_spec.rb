@@ -18,7 +18,7 @@ module Awsymandias
       it "should YAMLize each of the attributes" do
         stub_connection do |connection|
           connection.should_receive(:put_attributes).with('domain', 'key',
-            { :foo => 'foo'.to_yaml, :bar => {:baz => 'hmm'}.to_yaml }, true
+            { :foo => 'foo'.to_yaml.gsub("\n", "\\n"), :bar => {:baz => 'hmm'}.to_yaml.gsub("\n", "\\n") }, true
           )
         end
         
@@ -31,7 +31,7 @@ module Awsymandias
       it "should unYAMLize each of the attributes when found" do
         stub_connection do |connection|
           connection.should_receive(:get_attributes).and_return({
-            :attributes => { :foo => 'foo'.to_yaml, :bar => {:baz => 'hmm'}.to_yaml }
+            :attributes => { :foo => ['foo'.to_yaml.gsub("\n", "\\n")], :bar => [{:baz => 'hmm'}.to_yaml.gsub("\n", "\\n")] }
           })
         end
         

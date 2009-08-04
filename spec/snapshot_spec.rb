@@ -27,7 +27,7 @@ module Awsymandias
         connection.should_receive(:describe_snapshots).and_return(
           [{:aws_id => :some_snapshot_id}, {:aws_id => :another_snapshot_id}]
         )
-        Snapshot.should_receive(:connection).and_return(connection)
+        Awsymandias::RightAws.should_receive(:connection).and_return(connection)
         
         snapshots = Snapshot.find
         snapshots.map(&:aws_id).should == [:some_snapshot_id, :another_snapshot_id]

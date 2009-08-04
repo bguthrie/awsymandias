@@ -8,14 +8,14 @@ module Awsymandias
       end
 
       def put(domain, name, stuff, replace = true)
-        stuff.each_pair { |key, value| stuff[key] = value.to_yaml }
+        stuff.each_pair { |key, value| stuff[key] = value.to_yaml.gsub("\n","\\n") }
         connection.put_attributes handle_domain(domain), name, stuff, replace
       end
 
       def get(domain, name)
         stuff = connection.get_attributes(handle_domain(domain), name)[:attributes] || {}
         stuff.inject({}) do |hash, (key, value)|
-          hash[key.to_sym] = YAML.load(value)
+          hash[key.to_sym] = YAML.load(value.first.gsub("\\n","\n"))
           hash
         end
       end

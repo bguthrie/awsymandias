@@ -11,7 +11,7 @@ module Awsymandias
     def instance_id; aws_instance_id;  end
     def public_dns;  dns_name;         end
     def private_dns; private_dns_name; end
-    def dns_hostname; name.gsub(/_/,'-'); end
+    def dns_hostname; name.to_s.gsub(/_/,'-'); end
 
     def attached_volumes
       Awsymandias::RightAws.describe_volumes.select { |volume| volume.aws_instance_id == instance_id }

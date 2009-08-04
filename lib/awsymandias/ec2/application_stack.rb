@@ -43,7 +43,7 @@ module Awsymandias
         opts[:volumes].each { |name, opts| volume(name, opts) } if opts[:volumes]
       end
       
-      def self.define(name)
+      def self.define(name, &block)
         definition = StackDefinition.new(name)
         yield definition if block_given?
         definition.build_stack
@@ -72,11 +72,13 @@ module Awsymandias
 
       def launch
         store_app_stack_metadata!
+
         @unlaunched_instances.each_pair do |instance_name, params|
           @instances[instance_name] = Awsymandias::Instance.launch(params)
           @instances[instance_name].name = instance_name
           @unlaunched_instances.delete instance_name
         end
+
         attach_volumes
         store_app_stack_metadata!
         self
@@ -182,7 +184,9 @@ module Awsymandias
                                                   :name => instance.name,
                                                   :attached_volumes => instance.attached_volumes.map { |vol| vol.aws_id }
                                                 }
-        end          
+        end
+        
+        metadata[:roles] = @roles
   
         Awsymandias::SimpleDB.put @simpledb_domain, @name, metadata
       end
@@ -208,8 +212,9 @@ module Awsymandias
               define_methods_for_instance(instance_name)
             end
           end
-        
-          @foo = metadata[:foo]
+          
+          @roles = metadata[:roles]
+          @roles.keys.each { |role| define_methods_for_role(role) }          
         end
       end
     end
