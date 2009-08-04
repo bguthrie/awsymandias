@@ -1,7 +1,7 @@
 module Awsymandias
   module EC2
     class ApplicationStack
-      attr_reader :name, :simpledb_domain, :unlaunched_instances, :instances, :volumes
+      attr_reader :name, :simpledb_domain, :unlaunched_instances, :instances, :volumes, :roles
 
       DEFAULT_SIMPLEDB_DOMAIN = "application-stack"
 
@@ -21,13 +21,19 @@ module Awsymandias
       end
 
       def initialize(name, opts={})
-        opts.assert_valid_keys :instances, :simpledb_domain, :volumes
+        opts.assert_valid_keys :instances, :simpledb_domain, :volumes, :roles
 
         @name       = name
         @simpledb_domain = opts[:simpledb_domain] || DEFAULT_SIMPLEDB_DOMAIN
         @instances  = {}
         @unlaunched_instances = {}
         @volumes    = {}
+        @roles = {}
+        
+        if opts[:roles]
+          @roles = opts[:roles]
+          @roles.keys.each { |role| define_methods_for_role(role) }
+        end
         
         if opts[:instances]
           @unlaunched_instances = opts[:instances]
@@ -55,6 +61,12 @@ module Awsymandias
       def define_methods_for_instance(instance_name)
         if !self.metaclass.respond_to?(instance_name)
           self.metaclass.send(:define_method, instance_name) { @instances[instance_name] }
+        end
+      end
+
+      def define_methods_for_role(role_name)
+        self.metaclass.send(:define_method, role_name) do
+          @roles[role_name].map { |instance_name| @instances[instance_name] }
         end
       end
 

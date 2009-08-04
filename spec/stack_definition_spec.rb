@@ -29,6 +29,12 @@ module Awsymandias
         stackdef.volume :a, :unix_device => 'foo'
         stackdef.build_stack.volumes[:a].should == { :unix_device => 'foo' }
       end
+      
+      it "should populate the roles" do
+        stackdef = StackDefinition.new('test')
+        stackdef.role :app, :a
+        stackdef.build_stack.roles[:app].should == [:a]
+      end
     end
 
  
@@ -37,6 +43,19 @@ module Awsymandias
         stackdef = StackDefinition.new 'test'
         stackdef.instance :a, :availability_zone => 'foo', :image_id => 'bar'
         stackdef.defined_instances[:a].should == { :availability_zone => 'foo', :image_id => 'bar' }
+      end
+      
+      it "should allow specifying a single role without mucking up the instance" do
+        stackdef = StackDefinition.new 'test'
+        stackdef.instance :a, :role => :app
+        stackdef.defined_roles[:app].should == [:a]
+      end
+      
+      it "should allow specifying multiple roles without mucking up the instance" do
+        stackdef = StackDefinition.new 'test'
+        stackdef.instance :a, :roles => [:app, :web, :db]
+        stackdef.defined_instances[:a].should == {}
+        stackdef.defined_roles.should == { :app => [:a], :web => [:a], :db => [:a]}
       end
     end
     
@@ -47,6 +66,28 @@ module Awsymandias
         stackdef.defined_instances[:a].should == { :availability_zone => 'foo', :image_id => 'bar' }
         stackdef.defined_instances[:b].should == { :availability_zone => 'foo', :image_id => 'bar' }
         stackdef.defined_instances[:c].should == { :availability_zone => 'foo', :image_id => 'bar' }          
+      end
+
+      it "should allow specifying a single role without mucking up the instance" do
+        stackdef = StackDefinition.new 'test'
+        stackdef.instances :a, :b, :c, :role => :app
+        stackdef.defined_instances.should == { :a => {}, :b => {}, :c => {} }
+        stackdef.defined_roles.should == { :app => [:a, :b, :c] }
+      end
+      
+      it "should allow specifying multiple roles without mucking up the instance" do
+        stackdef = StackDefinition.new 'test'
+        stackdef.instances :a, :b, :c, :roles => [:app, :web, :db]
+        stackdef.defined_instances.should == { :a => {}, :b => {}, :c => {} }
+        stackdef.defined_roles.should == { :app => [:a, :b, :c], :web => [:a, :b, :c], :db => [:a, :b, :c]}
+      end
+    end
+    
+    describe 'role' do
+      it "should allow specifying a role to instance mapping" do
+        stackdef = StackDefinition.new 'test'
+        stackdef.role :app, :a, :b, :c
+        stackdef.defined_roles[:app].should == [:a, :b, :c]  
       end
     end
  

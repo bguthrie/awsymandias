@@ -197,6 +197,18 @@ module Awsymandias
           definition.unlaunched_instances[:foo].should == { :image_id => 'foo' }
         end
         
+        it "should create a method for each role created" do
+          stack = ApplicationStack.define('test') do
+            instance :foo, :image_id => 'foo', :role => :app
+          end
+          stack.should_receive(:store_app_stack_metadata!).any_number_of_times.and_return(nil)
+          foo_instance = stub_instance :image_id => 'foo'
+          Instance.should_receive(:launch).with(:image_id => 'foo').and_return(foo_instance)
+          stack.launch
+          
+          stack.app.should == [foo_instance]
+        end
+        
       end
     
       describe "launch" do
