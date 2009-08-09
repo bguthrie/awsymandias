@@ -3,11 +3,27 @@ require 'spec/rake/spectask'
 require 'rake/gempackagetask'
 require 'jeweler'
 
-# task :spec
-Spec::Rake::SpecTask.new do |t|
-  t.rcov = true
-  t.rcov_opts = ["--text-summary", "--include-file lib/awsymandias", "--exclude gems,spec"]
+
+namespace :spec do
+
+  desc "runs all the unit specs"
+  Spec::Rake::SpecTask.new(:unit) do |t|
+    t.rcov = true
+    t.rcov_opts = ["--text-summary", "--include-file lib/awsymandias", "--exclude gems,spec"]
+    t.spec_files = FileList['spec/unit/**/*_spec.rb']
+  end
+
+  desc "runs all the integration specs (requires AMAZON_ACCESS_KEY_ID and AMAZON_SECRET_ACCESS_KEY env variables to be set)"
+  Spec::Rake::SpecTask.new(:integration) do |t|
+    t.rcov = true
+    t.rcov_opts = ["--text-summary", "--include-file lib/awsymandias", "--exclude gems,spec"]
+    t.spec_files = FileList['spec/integration/**/*_spec.rb']
+  end
+  
 end
+
+desc "runs all the specs"
+task :spec => [:'spec:unit', :'spec:integration']
 
 task :default => [:spec]
 
