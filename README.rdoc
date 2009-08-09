@@ -7,10 +7,10 @@ Awsymandias is a library that helps you set up and tear down complicated AWS env
 == Example
 
   # Give the stack a name, and describe its members.
-  stack = Awsymandias::EC2::ApplicationStack.define("test") do
-    instance :db,  :instance_type => "m1.large", ... 
-    instance :app, :instance_type => "c1.xlarge", ... 
-    volume :data, :volume_id => "vol-12345", :instance => :db, :unix_device => "/dev/sdj"
+  stack = Awsymandias::EC2::ApplicationStack.define("test") do |s|
+    s.instance :db,  :instance_type => "m1.large", ... 
+    s.instance :app, :instance_type => "c1.xlarge", ... 
+    s.volume :data, :volume_id => "vol-12345", :instance => :db, :unix_device => "/dev/sdj"
   end
 
   # Check if we're running by pulling stack description from SDB; if not, launch asynchronously.
@@ -32,7 +32,7 @@ This should allow you to re-launch and deploy that AWS stack from any one of sev
 * {Paul Gross}[http://www.pgrs.net] {github}[http://github.com/pgr0ss] {email}[mailto:pgross@gmail.com]
 * Rob Sweet (rob@ldg.net)
 * Kris Hicks (krishicks at gmail dot com)
-* Tony Pitluga
+* {Tony Pitluga}[http://tonypitluga.blogspot.com/] {github}[http://github.com/pitluga] {email}[mailto:tony.pitluga@gmail.com]
 
 == Brief Expository Sonnet
 
