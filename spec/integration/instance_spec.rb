@@ -7,7 +7,6 @@ describe 'when creating an instance' do
   before :all do
     Awsymandias.access_key_id = ENV['AMAZON_ACCESS_KEY_ID'] 
     Awsymandias.secret_access_key = ENV['AMAZON_SECRET_ACCESS_KEY']
-    Awsymandias.verbose = true
 
     @stack = Awsymandias::EC2::ApplicationStack.define('instances') do |s|
       s.instance :box, :image_id => 'ami-20b65349'
@@ -31,5 +30,15 @@ describe 'when creating an instance' do
     end
   end
 
+
+  describe "finding the stack in simple db" do
+    
+    it "should remember the box instance" do
+      found_stack = Awsymandias::EC2::ApplicationStack.find('instances')
+      found_stack.box.should_not be_nil
+      found_stack.box.running?.should be_true
+    end
+    
+  end
   
 end
