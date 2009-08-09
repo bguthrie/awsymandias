@@ -352,6 +352,14 @@ module Awsymandias
           instance.port_open?(100).should be_false
         end
       end
+      
+      describe "dns_hostname" do
+        it "should return instance name with dashes instead of underscores" do
+          instance = Instance.new
+          instance.name = :db_1
+          instance.dns_hostname.should == "db-1"
+        end
+      end
     end
   end
 end

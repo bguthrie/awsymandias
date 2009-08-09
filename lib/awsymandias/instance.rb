@@ -11,7 +11,17 @@ module Awsymandias
     def instance_id; aws_instance_id;  end
     def public_dns;  dns_name;         end
     def private_dns; private_dns_name; end
-    def dns_hostname; name.gsub(/_/,'-'); end
+    def dns_hostname; name.to_s.gsub(/_/,'-'); end
+
+    def summarize
+      output = []
+      output << "   Instance '#{name}'\t#{instance_id}\t#{public_dns}\tLaunched #{aws_launch_time}"
+      output << "      #{aws_state}\t#{aws_availability_zone}\t#{aws_instance_type.name}\t#{aws_image_id}"
+      attached_volumes.each do |volume|
+        output << "      #{volume.aws_id} -> #{volume.aws_device}"
+      end
+      output.join("\n")
+    end
 
     def attached_volumes
       Awsymandias::RightAws.describe_volumes.select { |volume| volume.aws_instance_id == instance_id }
@@ -66,6 +76,13 @@ module Awsymandias
         :ssh_key_name => self.ssh_key_name,
         :aws_instance_type => self.aws_instance_type,
         :aws_availability_zone => self.aws_availability_zone
+      }
+    end
+    
+    def to_simpledb
+      { :aws_instance_id => aws_instance_id, 
+        :name => name,
+        :attached_volumes => attached_volumes.map { |vol| vol.to_simpledb }
       }
     end
     
