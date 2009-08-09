@@ -62,7 +62,9 @@ module Awsymandias
       self
     end
     
-    
+    def to_simpledb
+      aws_id
+    end
     
   end
 end

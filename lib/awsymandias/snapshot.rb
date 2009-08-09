@@ -25,5 +25,9 @@ module Awsymandias
       SimpleDB.put('snapshots', name, :snapshot_id => id)
     end
     
+    def to_simpledb
+      id
+    end
+    
   end
 end

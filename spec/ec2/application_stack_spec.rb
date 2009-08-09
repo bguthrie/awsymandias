@@ -57,6 +57,17 @@ module Awsymandias
         instance
       end
 
+      def stub_load_balancer(stubs={})
+        lb_defaults = {:aws_created_at => "Tue Aug 04 11:14:27 UTC 2009",
+                                :availability_zones=>["us-east-1b"],
+                                :dns_name=>nil,
+                                :name=>"RobTest",
+                                :instances=>["i-5752453e"],
+                                :listeners=> [{:protocol=>"HTTP", :load_balancer_port=>80, :instance_port=>3080}],
+                               }
+        LoadBalancer.new(lb_defaults.merge(stubs))
+      end
+
       before :each do
         @simpledb = SimpleDBStub.new
         SimpleDB.stub!(:connection).and_return @simpledb
@@ -361,6 +372,46 @@ module Awsymandias
 
           s.launch
         end
+        
+        it "should launch its load balancers when launched" do
+          lb_params = {:availability_zones=>["us-east-1b"],
+                       :instances=>[:db],
+                       :listeners=> [{:protocol=>"HTTP", :load_balancer_port=>80, :instance_port=>3080}]
+                      }
+          s = ApplicationStack.define("test") do |s|
+            s.instance :db,  :instance_type => InstanceTypes::C1_XLARGE
+            s.load_balancer :lb, lb_params
+          end
+        
+          Instance.should_receive(:launch).and_return(stub_instance)
+          s.should_receive(:store_app_stack_metadata!).any_number_of_times.and_return(nil)
+          lb = stub_load_balancer
+        
+          LoadBalancer.should_receive(:launch).with(lb_params).and_return(lb)
+          s.launch
+        end
+      
+        it "should remove the load balancer from unlaunched_load_balancers after it has been launched" do
+          lb_params = {:availability_zones=>["us-east-1b"],
+                       :instances=>[:db],
+                       :listeners=> [{:protocol=>"HTTP", :load_balancer_port=>80, :instance_port=>3080}]
+                      }
+          s = ApplicationStack.define("test") do |s|
+            s.instance :db,  :instance_type => InstanceTypes::C1_XLARGE
+            s.load_balancer :lb, lb_params
+          end
+          s.should_receive(:store_app_stack_metadata!).any_number_of_times.and_return(nil)
+        
+          Instance.should_receive(:launch).and_return(stub_instance)
+          
+          lb = stub_load_balancer        
+          LoadBalancer.should_receive(:launch).with(lb_params).and_return(lb)
+          
+          s.unlaunched_load_balancers[:lb].should_not be_nil
+          s.launch
+          s.unlaunched_load_balancers[:lb].should be_nil
+        end
+      
       end
       
       describe "launched?" do    

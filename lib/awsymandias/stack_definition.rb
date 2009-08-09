@@ -1,12 +1,13 @@
 module Awsymandias
   class StackDefinition
-    attr_reader :name, :defined_instances, :defined_volumes, :defined_roles
+    attr_reader :name, :defined_instances, :defined_volumes, :defined_roles, :defined_load_balancers
     
     def initialize(name)
       @name = name
       @defined_instances = {}
       @defined_volumes = {}
       @defined_roles = {}
+      @defined_load_balancers = {}
     end
  
     def instance(name, config={})
@@ -21,6 +22,10 @@ module Awsymandias
         roles.each { |r| role(r, name) }
         instance(name, config) 
       end
+    end
+    
+    def load_balancer(name, configuration = {})
+      @defined_load_balancers[name] = configuration
     end
     
     def role(name, *instance_names)
@@ -41,7 +46,8 @@ module Awsymandias
       Awsymandias::EC2::ApplicationStack.new(name, 
         :instances => defined_instances,
         :volumes => defined_volumes,
-        :roles => defined_roles
+        :roles => defined_roles,
+        :load_balancers => defined_load_balancers
       )
     end
     

@@ -41,6 +41,13 @@ module RightAws
 
     attr_reader :last_query_expression
 
+    def on_exception
+      super
+    rescue RightAws::AwsError => e
+      error = Hash.from_xml(last_response.body)['ErrorResponse']['Error']
+      raise RightAws::AwsError, "#{error['Code']}:  #{error['Message']}"
+    end
+
     # Creates new RightElb instance.
     #
     # Params:
@@ -127,8 +134,8 @@ module RightAws
      #      :dns_name=>"RobTest-883635706.us-east-1.elb.amazonaws.com",
      #      :name=>"RobTest",
      #      :instances=>["i-5752453e"],
-     #      :listeners=> [{:protocol=>"HTTP", :lb_port=>80, :instance_port=>3080},
-     #                    {:protocol=>"HTTP", :lb_port=>8080, :instance_port=>3081}
+     #      :listeners=> [{:protocol=>"HTTP", :load_balancer_port=>80, :instance_port=>3080},
+     #                    {:protocol=>"HTTP", :load_balancer_port=>8080, :instance_port=>3081}
      #                   ],
      #      :health_check=> { :healthy_threshold=>10,
      #                        :unhealthy_threshold=>3,
@@ -270,7 +277,7 @@ module RightAws
           when 'DNSName'          then @lb[:dns_name]        = @text
             
           when 'Protocol'         then @listener[:protocol]  = @text
-          when 'LoadBalancerPort' then @listener[:lb_port]   = @text.to_i
+          when 'LoadBalancerPort' then @listener[:load_balancer_port]   = @text.to_i
           when 'InstancePort'     then @listener[:instance_port] = @text.to_i
             
           when 'HealthCheck'        then @lb[:health_check] = @health_check

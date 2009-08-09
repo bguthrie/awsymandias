@@ -1,7 +1,7 @@
 module Awsymandias
   module EC2
     class ApplicationStack
-      attr_reader :name, :simpledb_domain, :unlaunched_instances, :instances, :volumes, :roles
+      attr_reader :name, :simpledb_domain, :unlaunched_instances, :instances, :volumes, :roles, :unlaunched_load_balancers, :load_balancers
 
       DEFAULT_SIMPLEDB_DOMAIN = "application-stack"
 
@@ -21,14 +21,17 @@ module Awsymandias
       end
 
       def initialize(name, opts={})
-        opts.assert_valid_keys :instances, :simpledb_domain, :volumes, :roles
+        opts.assert_valid_keys :instances, :simpledb_domain, :volumes, :roles, :load_balancers
 
-        @name       = name
+        @name = name
         @simpledb_domain = opts[:simpledb_domain] || DEFAULT_SIMPLEDB_DOMAIN
         @instances  = {}
         @unlaunched_instances = {}
         @volumes    = {}
         @roles = {}
+        @load_balancers = {}
+        @unlaunched_load_balancers = {}
+        @terminating = false
         
         if opts[:roles]
           @roles = opts[:roles]
@@ -40,7 +43,11 @@ module Awsymandias
           opts[:instances].each { |name, configuration| define_methods_for_instance(name) }
         end
       
-        opts[:volumes].each { |name, opts| volume(name, opts) } if opts[:volumes]
+        opts[:volumes].each { |name, configuration| volume(name, configuration) } if opts[:volumes]
+        
+        if opts[:load_balancers]
+          opts[:load_balancers].each_pair { |lb_name, config| @unlaunched_load_balancers[lb_name] = config }
+        end
       end
       
       def self.define(name, &block)
@@ -78,9 +85,20 @@ module Awsymandias
           @instances[instance_name].name = instance_name
           @unlaunched_instances.delete instance_name
         end
+        store_app_stack_metadata!
+        
+        @unlaunched_load_balancers.each_pair do |lb_name, params|
+          instance_names = params[:instances]
+          params[:instances] = params.delete(:instances).map { |instance_name| @instances[instance_name].instance_id } if params[:instances]
+          params[:name] = lb_name
+          @load_balancers[lb_name] = Awsymandias::LoadBalancer.launch(params)
+          @unlaunched_load_balancers.delete lb_name
+        end
+        store_app_stack_metadata!
 
         attach_volumes
         store_app_stack_metadata!
+
         self
       end
       
@@ -121,18 +139,31 @@ module Awsymandias
       end
       
       def reload
-        raise "Can't reload unless launched" unless launched?
+        raise "Can't reload unless launched" unless (launched? || terminating?)
         @instances.values.each(&:reload)
+        @load_balancers.values.each(&:reload)
         self
       end
 
       def terminate!
+        @terminating = true
         store_app_stack_metadata!
         instances.each do |instance|
           instance.terminate! if instance.running?
+          @instances.delete(instance.name)
         end
+        
+        load_balancers.values.each do |load_balancer|
+          load_balancer.terminate! if load_balancer.launched?
+          @load_balancers.delete(load_balancer.name)
+        end
+        
         remove_app_stack_metadata!
         self
+      end
+
+      def terminating?
+        @terminating
       end
 
       def launched?
@@ -156,37 +187,35 @@ module Awsymandias
         @instances.values.sum { |instance| instance.running_cost }
       end
 
-      def to_s
-        inspect
-      end
-    
-      def inspect
+      def summarize
         output = []
-        output << "   #{name}"
-        @instances.each_pair do |instance_name, instance|
-          output << "     #{instance_name}\t#{instance.instance_id}\t#{instance.aws_state}\t#{instance.aws_availability_zone}\t#{instance.aws_instance_type.name}\t#{instance.aws_image_id}\t#{instance.public_dns}\tLaunched #{instance.aws_launch_time}"
-          instance.attached_volumes.each do |volume|
-            output << "         #{volume.aws_id} -> #{volume.aws_device}"
-          end
+        output << "Stack '#{name}'"
+        @instances.each_pair do |name, instance| 
+          output << instance.summarize
+          output << ''
         end
-        output
+        @load_balancers.each_pair do |lb_name, lb| 
+          output << lb.summarize 
+          output << ''
+        end
+        output.flatten.join("\n")
       end
 
       private
 
       def store_app_stack_metadata!
         metadata = {}
-        metadata[:unlaunched_instances] = @unlaunched_instances
-  
-        metadata[:instances] = {}
-        @instances.each_pair do |instance_name, instance| 
-          metadata[:instances][instance_name] = { :aws_instance_id => instance.aws_instance_id, 
-                                                  :name => instance.name,
-                                                  :attached_volumes => instance.attached_volumes.map { |vol| vol.aws_id }
-                                                }
-        end
         
-        metadata[:roles] = @roles
+        [:unlaunched_instances, :unlaunched_load_balancers, :roles].each do |item_name|
+          metadata[item_name] = instance_variable_get "@#{item_name}"
+        end
+
+        [:instances, :load_balancers].each do |collection|
+          metadata[collection] = {}
+          instance_variable_get("@#{collection}").each_pair do |item_name, item| 
+            metadata[collection][item_name] = item.to_simpledb
+          end
+        end
   
         Awsymandias::SimpleDB.put @simpledb_domain, @name, metadata
       end
@@ -199,9 +228,19 @@ module Awsymandias
         metadata = Awsymandias::SimpleDB.get @simpledb_domain, @name 
       
         unless metadata.empty?
+          metadata[:unlaunched_load_balancers] ||= []
+          metadata[:load_balancers] ||= []
+          @unlaunched_load_balancers = metadata[:unlaunched_load_balancers]
+          unless metadata[:load_balancers].empty?
+            live_lbs = Awsymandias::LoadBalancer.find( metadata[:load_balancers].keys ).index_by(&:name)
+            metadata[:load_balancers].each_pair do |lb_name, lb|
+              @load_balancers[lb_name] = live_lbs[lb_name]
+            end
+          end
+          
           @unlaunched_instances = metadata[:unlaunched_instances]
         
-          if !metadata[:instances].empty?
+          unless metadata[:instances].empty?
             live_instances = Awsymandias::Instance.find(:all, :instance_ids =>                                   
                                                         metadata[:instances].values.map { |inst| inst[:aws_instance_id] }
                                                        ).index_by(&:instance_id)

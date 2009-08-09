@@ -9,6 +9,7 @@ unless defined?(Awsymandias)
   require 'activeresource'
   require 'net/telnet'
 
+  Dir[File.dirname(__FILE__) + "/awsymandias/extensions/**/*.rb"].each { |file| require file }
   Dir[File.dirname(__FILE__) + "/awsymandias/**/*.rb"].each { |file| require file }
 
   module Awsymandias
@@ -45,10 +46,9 @@ unless defined?(Awsymandias)
       end
       
       def describe_stacks
-        puts "Stacks:  "
         Awsymandias.stack_names.each do |stack_name|
           stack = EC2::ApplicationStack.find(stack_name)
-          puts stack.inspect if stack
+          puts stack.summarize if stack
           puts ""
         end
       end      
